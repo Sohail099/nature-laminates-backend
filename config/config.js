@@ -16,10 +16,10 @@ if ((/PRODUCTION/).test(ENVIRONMENT)) {
 }
 else if ((/DEVELOPMENT/).test(ENVIRONMENT)) {
     dbCredentials = {
-        user: process.env.DEV_RDS_DB_USER_AWS || '',
-        database: process.env.DEV_RDS_DB_AWS || '',
-        password: process.env.DEV_RDS_DB_PASS_AWS || '',
-        host: process.env.DEV_RDS_DB_HOST_AWS || '',
+        user: process.env.RDS_DEV_DB_USER || '',
+        database: process.env.RDS_DEV_DB_NAME || '',
+        password: process.env.RDS_DEV_DB_PASS || '',
+        host: process.env.RDS_DEV_DB_HOST || '',
         port: 5432,
         ssl: { rejectUnauthorized: false },
         max: parseInt(process.env.DB_MAX_CLIENTS) || 20,
