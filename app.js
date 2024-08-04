@@ -11,9 +11,9 @@ let numCPUs = require('os').cpus().length;
 const PORT = config.port;
 const upload = multer({ storage: storage })
 
-if (numCPUs > 4) {
-    numCPUs = 1;
-}
+// if (numCPUs > 4) {
+//     numCPUs = 1;
+// }
 
 if (cluster.isMaster) {
 

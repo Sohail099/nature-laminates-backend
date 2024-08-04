@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "start": "node app.js"
+        "start": "node app.js",
+        "dev": "pm2 kill && pm2 start app.js"
     },
     "keywords": [],
     "author": "Nature Laminates",
