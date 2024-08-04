@@ -4,7 +4,7 @@
     "main": "index.js",
     "scripts": {
         "start": "node app.js",
-        "kill "pm2 kill",
+        "kill": "pm2 kill",
         "dev": "pm2 start app.js"
     },
     "keywords": [],
