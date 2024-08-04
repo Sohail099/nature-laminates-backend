@@ -4,7 +4,8 @@
     "main": "index.js",
     "scripts": {
         "start": "node app.js",
-        "dev": "pm2 kill && pm2 start app.js"
+        "kill "pm2 kill",
+        "dev": "pm2 start app.js"
     },
     "keywords": [],
     "author": "Nature Laminates",
