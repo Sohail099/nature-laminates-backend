@@ -31,9 +31,9 @@ module.exports.addCarousels = async (req, res) => {
     try {
         logger.info(`${fileName} addCarousles() called`);
         let files = req.files;
-
+        let firebaseAdmin = req.firebaseAdmin;
         let columns = [
-            "name"    
+            "name"
         ];
         let values = [
             files[0].originalname
@@ -47,7 +47,7 @@ module.exports.addCarousels = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Carousels/${details.key}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, details.key);
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, details.key);
                 if (uploadResult.status) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
@@ -104,12 +104,13 @@ module.exports.removeCarousels = async (req, res) => {
     try {
         logger.info(`${fileName} removeCarousels() called`);
         let { key } = req.body;
+        let firebaseAdmin = req.firebaseAdmin;
         let result = await carouselsModel.removeCarousels(key);
-        
+
         if (result.rowCount) {
             let filePath = `Carousels/${result.rows[0].key}`;
-            await firebaseStorageHelper.deleteDirectoryFromStorage(filePath);      
-            
+            await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
+
             return res.status(200).json({
                 status: `success`,
                 message: `Carousel removed`,

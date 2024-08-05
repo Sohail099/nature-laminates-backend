@@ -43,7 +43,6 @@ async function getServiceAccountFromS3() {
 async function initializeFirebaseAdmin() {
     try {
         const serviceAccount = await getServiceAccountFromS3();
-        console.log("SA : ", serviceAccount);
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
             storageBucket: "gs://nature-laminates.appspot.com"
