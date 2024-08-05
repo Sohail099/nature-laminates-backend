@@ -2,6 +2,7 @@ const ROUTER = require('express').Router();
 const rolesRouter = require("./rolesRoutes");
 const userssRouter = require("./usersRoutes");
 const categoriesRouter = require("./categoriesRoutes");
+const carouselsRouter = require("./carouselsRoutes");
 const { validateAuthenticationToken, checkIsAdmin } = require("../middlewares/authentication");
 
 ROUTER.get("/check", async (req, res) => {
@@ -16,6 +17,7 @@ ROUTER.get("/callback", (req, res) => {
 // ROUTER.use("/role", validateAuthenticationToken, checkIsAdmin, rolesRouter);
 // ROUTER.use("/user", userssRouter);
 ROUTER.use("/categories", categoriesRouter);
+ROUTER.use("/carousels", carouselsRouter);
 // ROUTER.use("/xero", validateAuthenticationToken, xeroRouter);
 
 module.exports = ROUTER;
