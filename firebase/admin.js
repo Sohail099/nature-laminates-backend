@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 
-const serviceAccount = require("./nature-laminates-firebase-adminsdk-oxiyb-9aea4f53c9.json");
+const serviceAccount = require("./nature-laminates-firebase-adminsdk-oxiyb-96afb08e33.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
