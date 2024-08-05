@@ -62,6 +62,7 @@ module.exports.removeCategory = async (key) => {
     logger.info(`${fileName} removeCategory() called`)
     let sqlQuery = deleteRecordFromTable("categories", "key", key);
     sqlQuery += " returning *;"
+    let client = await dbUtil.getTransaction();
     try {
         let result = await dbUtil.sqlExecSingleRow(client, sqlQuery, []);
         await dbUtil.commit(client);

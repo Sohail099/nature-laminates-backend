@@ -108,7 +108,10 @@ module.exports.removeCategory = async (req, res) => {
         let result = await categoriesModel.removeCategory(key);
         if (result.rowCount) {
             let filePath = `Categories/${result.rows[0]['key']}`;
-            await firebaseStorageHelper.deleteDirectoryFromStorage(filePath);
+            let photo = result.rows[0]['photo'];
+            if (photo != null) {
+                await firebaseStorageHelper.deleteDirectoryFromStorage(filePath);
+            }
             return res.status(200).json({
                 status: `success`,
                 message: `Category removed`,

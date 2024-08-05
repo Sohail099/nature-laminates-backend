@@ -20,6 +20,7 @@ const uploadImageToStorage = (newFileName, file, token) => {
     });
 
     blobStream.on('error', (error) => {
+      console.log("Error : ", error);
       reject({
         status: false,
         message: 'Something is wrong! Unable to upload at the moment.'
