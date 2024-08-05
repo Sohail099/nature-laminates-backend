@@ -31,6 +31,7 @@ module.exports.addCategory = async (req, res) => {
     try {
         logger.info(`${fileName} addCategory() called`);
         let files = req.files;
+        let firebaseAdmin = req.firebaseAdmin;
         let { name, description } = req.body;
         let columns = [
             "name",
@@ -48,7 +49,7 @@ module.exports.addCategory = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Categories/${details.key}/${element['fieldname']}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, details.key);
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, details.key);
                 if (uploadResult.status) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
@@ -105,12 +106,13 @@ module.exports.removeCategory = async (req, res) => {
     try {
         logger.info(`${fileName} removeCategory() called`);
         let { key } = req.body;
+        let firebaseAdmin = req.firebaseAdmin;
         let result = await categoriesModel.removeCategory(key);
         if (result.rowCount) {
             let filePath = `Categories/${result.rows[0]['key']}`;
             let photo = result.rows[0]['photo'];
             if (photo != null) {
-                await firebaseStorageHelper.deleteDirectoryFromStorage(filePath);
+                await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
             }
             return res.status(200).json({
                 status: `success`,

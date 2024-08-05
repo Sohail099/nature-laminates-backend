@@ -1,7 +1,5 @@
-const firebaseAdmin = require("./admin");
-const bucket = firebaseAdmin.storage().bucket();
-
-const uploadImageToStorage = (newFileName, file, token) => {
+const uploadImageToStorage = async (firebaseAdmin, newFileName, file, token) => {
+  const bucket = firebaseAdmin.storage().bucket();
   return new Promise((resolve, reject) => {
     if (!file) {
       reject("No image file");
@@ -43,9 +41,9 @@ const uploadImageToStorage = (newFileName, file, token) => {
   });
 };
 
-const deleteDirectoryFromStorage = async (filePath) => {
+const deleteDirectoryFromStorage = async (firebaseAdmin, filePath) => {
+  const bucket = firebaseAdmin.storage().bucket();
   console.log('deleteDirectoryFromStorage');
-
   return await new Promise((resolve, reject) => {
     bucket.deleteFiles({
       prefix: filePath
@@ -57,6 +55,7 @@ const deleteDirectoryFromStorage = async (filePath) => {
   })
 
 }
+
 module.exports = {
   uploadImageToStorage,
   deleteDirectoryFromStorage
