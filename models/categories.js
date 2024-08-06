@@ -8,13 +8,16 @@ const {
 } = require('../utils/db_related/queryUtil');
 const fileName = 'categoriesModel.js';
 
-module.exports.getAllCategories = async (status) => {
+module.exports.getAllCategories = async (status, limit) => {
     logger.info(`${fileName} getAllCategories() called`);
     let sqlQuery = selectFromTable("categories", ["*"]);
     if (status != null) {
-        sqlQuery += ` where status='${status}'`
+        sqlQuery += ` where status='${status}'`;
     }
-    sqlQuery += " order by id desc"
+    sqlQuery += " order by id desc";
+    if (limit != null) {
+        sqlQuery += ` limit ${limit};`;
+    }
     let data = [];
     try {
         let result = await dbUtil.sqlToDB(sqlQuery, data);
