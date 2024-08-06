@@ -8,9 +8,12 @@ const {
 } = require('../utils/db_related/queryUtil');
 const fileName = 'categoriesModel.js';
 
-module.exports.getAllCategories = async (key) => {
+module.exports.getAllCategories = async (status) => {
     logger.info(`${fileName} getAllCategories() called`);
     let sqlQuery = selectFromTable("categories", ["*"]);
+    if (status != null) {
+        sqlQuery += ` where status='${status}'`
+    }
     sqlQuery += " order by id desc"
     let data = [];
     try {

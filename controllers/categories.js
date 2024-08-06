@@ -9,7 +9,8 @@ const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
 module.exports.getAllCategories = async (req, res) => {
     try {
         logger.info(`${fileName} getAllCategories() called`);
-        let categories = await categoriesModel.getAllCategories();
+        let status = req.query.status;
+        let categories = await categoriesModel.getAllCategories(status);
         return res.status(200).json({
             status: `success`,
             message: successMessage,
