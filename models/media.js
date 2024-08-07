@@ -28,10 +28,19 @@ module.exports.addMedia = async (columns, values) => {
     }
 }
 
-module.exports.removeMedia = async()=>{
+module.exports.removeMedia = async (key) => {
+    logger.info(`${fileName} removeMedia() called`)
+    let sqlQuery = deleteRecordFromTable("media", "key", key);
+    sqlQuery += " returning *;"
+    let client = await dbUtil.getTransaction();
     try {
-        
-    } catch (error) {
-        
+        let result = await dbUtil.sqlExecSingleRow(client, sqlQuery, []);
+        await dbUtil.commit(client);
+        return result;
+    }
+    catch (error) {
+        logger.error(`${fileName} removeMedia() ${error.message}`);
+        await dbUtil.rollback(client);
+        throw new Error(error.message);
     }
 }

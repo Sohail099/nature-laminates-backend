@@ -5,86 +5,60 @@ const mediaModel = require('../models/media');
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
-const joiValidate = require("../utils/other/joi-validator")
+const uuid = require('uuid')
 
 module.exports.addProduct = async (req, res) => {
     try {
         logger.info(`${fileName} addProduct() called`);
         let files = req.files;
         let firebaseAdmin = req.firebaseAdmin;
-        const { error, value } = joiValidate.validate(req.body);
-
-        if (error) {
-            return res.status(400).json({ error: error.details[0].message });
-        }
-        let { name, categorykey, rating, productcode, dimension_unit, width, length, views, likes, price } = value;
+        let { name, categorykey,  productcode, dimension_unit, width, length, price } = req.body;
         let columns = [
             "name",
             "category_key",
-            "rating",
             "product_code",
             "dimension_unit",
             "width",
             "length",
-            "views",
-            "likes",
             "price"
         ];
         let values = [
-            name, categorykey, rating, productcode, dimension_unit, width, length, views, likes, price
+            name, categorykey, productcode, dimension_unit, width, length, price
         ]
-        let result = await productsModel.addProducts(columns, values);
+        let result = await productsModel.addProducts(columns, values);   
+         
         if (result.rowCount) {
-            let details = result.rows[0];
-            let mediaColumns = [];
-            let mediaValues = [];
+            let details = result.rows[0]; 
+
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
-                let filePath = `Product/${details.key}/${element['fieldname']}`;
-
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, details.key);
+                let mediaKey = uuid.v4();
+                let mediaColumns = [];
+                let mediaValues = [];
+                mediaColumns.push("key","url", "product_key", "media_type", "name");
+                let filePath = `Product/${details.key}/${mediaKey}`;
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, mediaKey);
 
                 if (uploadResult.status) {
-                    mediaColumns.push("url", "product_key", "media_type", "name");
-                    mediaValues.push(uploadResult.url, details.key, element['mimetype'], element['originalname']);
+                    mediaValues.push( mediaKey,uploadResult.url, details.key, element['mimetype'], element['originalname']);
+                   await mediaModel.addMedia(mediaColumns, mediaValues)
 
-                }
-                else {
-                    return res.status(400).json({
-                        status: `error`,
-                        message: uploadResult.message,
-                        statusCode: 400,
-                        data: []
-                    })
-                }
-            }
-
-            let updateResult = await mediaModel.addMedia(mediaColumns, mediaValues);
-            if (updateResult.rowCount > 0) {
-                return res.status(200).json({
-                    status: `success`,
-                    message: `New product added`,
-                    statusCode: 200,
-                    data: result.rows[0],
-                    data2: updateResult.rows[0]
-                })
-            }
-            else {
-                return res.status(400).json({
-                    status: `error`,
-                    message: errMessage + " while updating fields:" + updateColumns.join(", "),
-                    statusCode: 400,
-                    data: []
-                })
-            }
-        } else {
+                }          
+            }      
+            return res.status(200).json({
+                status: `success`,
+                message: successMessage,
+                statusCode: 200,
+                data: result.rows
+            })
+        }else {
             return res.status(400).json({
                 status: `error`,
                 message: errMessage,
                 statusCode: 400,
                 data: []
             })
-        }
+            }
 
     } catch (error) {
         logger.error(`${fileName} addProduct() ${error.message}`);
