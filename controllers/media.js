@@ -5,74 +5,70 @@ const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper");
 
-// module.exports.updateMedia = async(req,res)=>{
-//     logger.info("updateMedia called ()");
-//     try {
 
-//         let obj = req.body
-//         let files = req.files;
-//         let mediaKey  = obj.key;
-//         let firebaseAdmin = req.firebaseAdmin;
+module.exports.addMedia = async (req, res) => {
+    try {
+        logger.info(`${fileName} addMedia() called`);
+        let files = req.files;
+        let firebaseAdmin = req.firebaseAdmin;
+        let { productkey } = req.body;
+        let columns = [
+            "product_key"
+        ];
+        let values = [
+            productkey
+        ]
+       
+            let mediaColumns = [];
+            let mediaValues = [];
+            for (let index = 0; index < files.length; index++) {
+                const element = files[index];
 
-//         let restrictedKeyforUpdate = ['id','key','product_key','created_at','added_by']
-//         for (let i = 0; i < restrictedKeyforUpdate.length; i++) {
-//             delete obj[restrictedKeyforUpdate[i]];
-//         }
-//         // let columnsToUpdate = Object.entries(obj).map(([key, value]) => key);
-//         // let valuesForUpdate = Object.entries(obj).map(([key, value]) => value);
-        
-//         for (let index = 0; index < files.length; index++) {
-//             const element = files[index];
-//             let filePath = `Product/${mediaKey}/${element['fieldname']}`;
-           
-//             let uploadResult = await firebaseStorageHelper.updateImageInStorage(firebaseAdmin, filePath, element, mediaKey);
+//key ki jarurat
+                let filePath = `Product/${details.key}/${element['fieldname']}`;
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, details.key);
+                if (uploadResult.status) {
+                    mediaColumns.push("url", "product_key", "media_type", "name");
+                    mediaValues.push(uploadResult.url, details.key, element['mimetype'], element['originalname']);
 
-//             console.log("see the upload reasutlssss**********",uploadResult)
-            
-//             let mediaColumns = [];
-//             let mediaValues = [];
+                }
+                else {
+                    return res.status(400).json({
+                        status: `error`,
+                        message: uploadResult.message,
+                        statusCode: 400,
+                        data: []
+                    })
+                }
+            }
 
-//             if (uploadResult.status) {
-//                 mediaColumns.push("url", "product_key", "media_type", "name");
-//                 mediaValues.push(uploadResult.url, details.key, element['mimetype'], element['originalname']);
-
-//                 const updateResult = await mediaModel.updateMedia(mediaColumns, mediaValues,mediaKey);
-
-//                 console.log("see the updated resule_+_+_+_++_+__+",updateResult);
-
-//             }
-//             else {
-//                 return res.status(400).json({
-//                     status: `error`,
-//                     message: uploadResult.message,
-//                     statusCode: 400,
-//                     data: []
-//                 })
-//             }
-//         }
-        
-
-//         let updateDetails = await mediaModel.updateMedia(columnsToUpdate, valuesForUpdate, mediaKey);
-
-//         if (updateDetails.rowCount > 0) {
-//             return res.status(200).json({
-//                 status: `success`,
-//                 message: successMessage,
-//                 statusCode: 200,
-//                 data: updateDetails.rows
-//             })
-//         } else {
-//             return res.status(400).json({
-//                 status: `error`,
-//                 message: errMessage,
-//                 statusCode: 400
-//             })
-//         }
-
-//     } catch (error) {
-//         logger.error(`${fileName} updatedProduct() ${error.message}`);
-//         return res.status(500).json({ status: 'error', message: error.message, statusCode: 500 });
-//     }
+            let updateResult = await mediaModel.addMedia(mediaColumns, mediaValues);
 
 
-// }
+            if (updateResult.rowCount > 0) {
+                return res.status(200).json({
+                    status: `success`,
+                    message: `New media added`,
+                    statusCode: 200,
+                    data: result.rows[0],
+                    data2: updateResult.rows[0]
+                })
+            }
+            else {
+                return res.status(400).json({
+                    status: `error`,
+                    message: errMessage + " while updating fields:" + updateColumns.join(", "),
+                    statusCode: 400,
+                    data: []
+                })
+            }
+
+    } catch (error) {
+        logger.error(`${fileName} addMedia() ${error.message}`);
+        return res.status(500).json({
+            statusCode: 500,
+            status: `error`,
+            message: error.message
+        })
+    }
+}

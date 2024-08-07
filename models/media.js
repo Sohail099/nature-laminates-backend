@@ -27,3 +27,11 @@ module.exports.addMedia = async (columns, values) => {
         throw new Error(error.message);
     }
 }
+
+module.exports.removeMedia = async()=>{
+    try {
+        
+    } catch (error) {
+        
+    }
+}

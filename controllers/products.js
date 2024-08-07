@@ -5,13 +5,19 @@ const mediaModel = require('../models/media');
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
+const joiValidate = require("../utils/other/joi-validator")
 
 module.exports.addProduct = async (req, res) => {
     try {
         logger.info(`${fileName} addProduct() called`);
         let files = req.files;
         let firebaseAdmin = req.firebaseAdmin;
-        let { name, categorykey, rating, productcode, dimension_unit, width, length, views, likes, price } = req.body;
+        const { error, value } = joiValidate.validate(req.body);
+
+        if (error) {
+            return res.status(400).json({ error: error.details[0].message });
+        }
+        let { name, categorykey, rating, productcode, dimension_unit, width, length, views, likes, price } = value;
         let columns = [
             "name",
             "category_key",
@@ -89,6 +95,7 @@ module.exports.addProduct = async (req, res) => {
         })
     }
 }
+
 module.exports.getAllProduct = async (req, res) => {
     try {
         logger.info(`${fileName} getAllProduct() called`);
