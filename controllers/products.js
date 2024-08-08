@@ -25,11 +25,9 @@ module.exports.addProduct = async (req, res) => {
         let values = [
             name, categorykey, productcode, dimension_unit, width, length, price
         ]
-        let result = await productsModel.addProducts(columns, values);   
-         
+        let result = await productsModel.addProducts(columns, values);        
         if (result.rowCount) {
             let details = result.rows[0]; 
-
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let mediaKey = uuid.v4();
@@ -42,7 +40,6 @@ module.exports.addProduct = async (req, res) => {
                 if (uploadResult.status) {
                     mediaValues.push( mediaKey,uploadResult.url, details.key, element['mimetype'], element['originalname']);
                    await mediaModel.addMedia(mediaColumns, mediaValues)
-
                 }          
             }      
             return res.status(200).json({
@@ -127,19 +124,15 @@ module.exports.removeProducts = async (req, res) => {
 module.exports.updateProduct = async (req, res) => {
     logger.info("updateProduct called ()");
     try {
-
         let obj = req.body
         let productkey = obj.key;
-
         let restrictedKeyforUpdate = ['id', 'key', 'created_at', 'added_by']
         for (let i = 0; i < restrictedKeyforUpdate.length; i++) {
             delete obj[restrictedKeyforUpdate[i]];
         }
         let columnsToUpdate = Object.entries(obj).map(([key, value]) => key);
         let valuesForUpdate = Object.entries(obj).map(([key, value]) => value);
-
         let updateDetails = await productsModel.updateProduct(columnsToUpdate, valuesForUpdate, productkey);
-
         if (updateDetails.rowCount > 0) {
             return res.status(200).json({
                 status: `success`,
