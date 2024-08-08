@@ -10,8 +10,31 @@ const fileName = 'productModel.js';
 
 module.exports.getAllproducts = async (key) => {
     logger.info(`${fileName} getAllproducts() called`);
-    let sqlQuery = selectFromTable("products", ["*"]);
-    sqlQuery += " order by id desc"
+    let sqlQuery = `
+    SELECT 
+        p.*, 
+        COALESCE(json_agg(
+            json_build_object(
+                'key', m.key,
+                'product_key', m.product_key,
+                'url', m.url,
+                'media_type', m.media_type,
+                'status', m.status,
+                'name', m.name,
+                'created_at', m.created_at,
+                'updated_at', m.updated_at,
+                'added_by', m.added_by
+            )
+        ) FILTER (WHERE m.key IS NOT NULL), '[]') AS media
+    FROM 
+        products p
+    LEFT JOIN 
+        media m ON m.product_key = p.key
+    GROUP BY 
+        p.key
+    ORDER BY 
+        p.key DESC;
+`;
     let data = [];
     try {
         let result = await dbUtil.sqlToDB(sqlQuery, data);
@@ -42,26 +65,6 @@ module.exports.addProducts = async (columns, values) => {
     }
 }
 
-// module.exports.updateProdutDetails = async (columns, values) => {
-//     logger.info(`${fileName} updateProdutDetails() called`)
-//     let sqlQuery = updateTable("products", columns, "key");
-//     sqlQuery += " returning *;"
-//     let client = await dbUtil.getTransaction();
-//     try {
-//         let result = await dbUtil.sqlExecSingleRow(client, sqlQuery, values);
-//         await dbUtil.commit(client);
-//         return result;
-//     }
-//     catch (error) {
-//         logger.error(`${fileName} updateProdutDetails() ${error.message}`);
-//         await dbUtil.rollback(client);
-//         throw new Error(error.message);
-//     }
-// }
-
-
-
-
 module.exports.removeProduct = async (key) => {
     logger.info(`${fileName} removeProduct() called`)
     let sqlQuery = deleteRecordFromTable("products", "key", key);
@@ -79,22 +82,19 @@ module.exports.removeProduct = async (key) => {
     }
 }
 
-module.exports.updateProduct = async (columnsToUpdate,valuesForUpdate,key)=>
-{
+module.exports.updateProduct = async (columnsToUpdate, valuesForUpdate, key) => {
     logger.info(`${fileName} updatedProduct() called`)
-    let sqlQuery = updateTable("products",columnsToUpdate,"key");
+    let sqlQuery = updateTable("products", columnsToUpdate, "key");
     console.log()
     sqlQuery += ' returning *'
-    let data = [...valuesForUpdate,key];
+    let data = [...valuesForUpdate, key];
     let client = await dbUtil.getTransaction();
-    try
-    {
-        let result = await dbUtil.sqlExecSingleRow(client,sqlQuery,data);
+    try {
+        let result = await dbUtil.sqlExecSingleRow(client, sqlQuery, data);
         await dbUtil.commit(client);
         return result;
     }
-    catch(error)
-    {
+    catch (error) {
         logger.error(`${fileName} updatedProduct() ${error.message}`);
         await dbUtil.rollback(client);
         throw new Error(error.message);
