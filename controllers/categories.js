@@ -28,6 +28,28 @@ module.exports.getAllCategories = async (req, res) => {
     }
 }
 
+module.exports.getCategoryDetails = async (req, res) => {
+    try {
+        logger.info(`${fileName} getCategoryDetails() called`);
+        let { categoryId } = req.params;
+        let categoryDetails = await categoriesModel.getCategoryDetails(categoryId);
+        return res.status(200).json({
+            status: `success`,
+            message: successMessage,
+            statusCode: 200,
+            data: categoryDetails.rows[0]
+        })
+    }
+    catch (error) {
+        logger.error(`${fileName} getCategoryDetails() ${error.message}`);
+        return res.status(500).json({
+            statusCode: 500,
+            status: `error`,
+            message: error.message
+        })
+    }
+}
+
 module.exports.addCategory = async (req, res) => {
     try {
         logger.info(`${fileName} addCategory() called`);
