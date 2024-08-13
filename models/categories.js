@@ -29,6 +29,24 @@ module.exports.getAllCategories = async (status, limit) => {
     }
 }
 
+module.exports.getListCategoryDropdown = async (status) => {
+    logger.info(`${fileName} getListCategoryDropdown() called`);
+    let sqlQuery = selectFromTable("categories", ["key", "name"]);
+    if (status != null) {
+        sqlQuery += ` where status='${status}'`;
+    }
+    sqlQuery += " order by name";
+    let data = [];
+    try {
+        let result = await dbUtil.sqlToDB(sqlQuery, data);
+        return result;
+    }
+    catch (error) {
+        logger.error(`${fileName} getListCategoryDropdown() ${error.message}`);
+        throw new Error(error.message);
+    }
+}
+
 module.exports.getCategoryDetails = async (categoryId) => {
     logger.info(`${fileName} getCategoryDetails() called`);
     let sqlQuery = selectFromTable("categories", ["*"]);

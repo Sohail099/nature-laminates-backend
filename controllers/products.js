@@ -12,7 +12,7 @@ module.exports.addProduct = async (req, res) => {
         logger.info(`${fileName} addProduct() called`);
         let files = req.files;
         let firebaseAdmin = req.firebaseAdmin;
-        let { name, categorykey,  productcode, dimension_unit, width, length, price } = req.body;
+        let { name, categorykey, productcode, dimension_unit, width, length, price } = req.body;
         let columns = [
             "name",
             "category_key",
@@ -25,37 +25,37 @@ module.exports.addProduct = async (req, res) => {
         let values = [
             name, categorykey, productcode, dimension_unit, width, length, price
         ]
-        let result = await productsModel.addProducts(columns, values);        
+        let result = await productsModel.addProducts(columns, values);
         if (result.rowCount) {
-            let details = result.rows[0]; 
+            let details = result.rows[0];
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let mediaKey = uuid.v4();
                 let mediaColumns = [];
                 let mediaValues = [];
-                mediaColumns.push("key","url", "product_key", "media_type", "name");
+                mediaColumns.push("key", "url", "product_key", "media_type", "name");
                 let filePath = `Product/${details.key}/${mediaKey}`;
                 let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, mediaKey);
 
                 if (uploadResult.status) {
-                    mediaValues.push( mediaKey,uploadResult.url, details.key, element['mimetype'], element['originalname']);
-                   await mediaModel.addMedia(mediaColumns, mediaValues)
-                }          
-            }      
+                    mediaValues.push(mediaKey, uploadResult.url, details.key, element['mimetype'], element['originalname']);
+                    await mediaModel.addMedia(mediaColumns, mediaValues)
+                }
+            }
             return res.status(200).json({
                 status: `success`,
                 message: successMessage,
                 statusCode: 200,
                 data: result.rows
             })
-        }else {
+        } else {
             return res.status(400).json({
                 status: `error`,
                 message: errMessage,
                 statusCode: 400,
                 data: []
             })
-            }
+        }
 
     } catch (error) {
         logger.error(`${fileName} addProduct() ${error.message}`);

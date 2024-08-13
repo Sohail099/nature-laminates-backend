@@ -28,6 +28,28 @@ module.exports.getAllCategories = async (req, res) => {
     }
 }
 
+module.exports.getListCategoryDropdown = async (req, res) => {
+    try {
+        logger.info(`${fileName} getListCategoryDropdown() called`);
+        let { status } = req.query;
+        let categories = await categoriesModel.getListCategoryDropdown(status);
+        return res.status(200).json({
+            status: `success`,
+            message: successMessage,
+            statusCode: 200,
+            data: categories.rows
+        })
+    }
+    catch (error) {
+        logger.error(`${fileName} getListCategoryDropdown() ${error.message}`);
+        return res.status(500).json({
+            statusCode: 500,
+            status: `error`,
+            message: error.message
+        })
+    }
+}
+
 module.exports.getCategoryDetails = async (req, res) => {
     try {
         logger.info(`${fileName} getCategoryDetails() called`);
