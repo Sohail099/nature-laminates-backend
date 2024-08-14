@@ -24,7 +24,7 @@ module.exports.addProduct = async (req, res) => {
             "price"
         ];
         let values = [
-            name, categorykey, productcode, dimension_unit, width, length, price, description
+            name, categorykey, description, productcode, dimension_unit, width, length, price
         ]
         let result = await productsModel.addProducts(columns, values);
         if (result.rowCount) {
