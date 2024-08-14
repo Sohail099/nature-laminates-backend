@@ -100,3 +100,22 @@ module.exports.updateProduct = async (columnsToUpdate, valuesForUpdate, key) => 
         throw new Error(error.message);
     }
 };
+
+module.exports.getAllproductsByKey = async (column, value,status) => {
+    logger.info(`${fileName} getAllproducts() called`);
+    let sqlQuery =selectFromTable("products",["*"]) ;
+    sqlQuery += ` where ${column}= $1`;
+   
+    if (status != null) {
+        sqlQuery += ` AND status='${status}'`;
+    }
+    let data = [value];
+    try {
+        let result = await dbUtil.sqlToDB(sqlQuery, data);
+        return result;
+    }
+    catch (error) {
+        logger.error(`${fileName} getAllproducts() ${error.message}`);
+        throw new Error(error.message);
+    }
+}

@@ -154,3 +154,48 @@ module.exports.updateProduct = async (req, res) => {
         return res.status(500).json({ status: 'error', message: error.message, statusCode: 500 });
     }
 }
+module.exports.getAllProductByCategorieKey = async (req, res) => {
+    logger.info(`${fileName} getAllProductByCategorieKey() called`);
+
+    try {
+        let categoriesKey = req.params.categoryId;
+        let {status} = req.query;
+        let products = await productsModel.getAllproductsByKey("category_Key",categoriesKey,status);
+        return res.status(200).json({
+            status: `success`,
+            message: successMessage,
+            statusCode: 200,
+            data: products.rows
+        })
+    }
+    catch (error) {
+        logger.error(`${fileName} getAllProductByCategorieKey() ${error.message}`);
+        return res.status(500).json({
+            statusCode: 500,
+            status: `error`,
+            message: error.message
+        })
+    }
+}
+
+module.exports.getAllProductByProductKey = async (req, res) => {
+    logger.info(`${fileName} getAllProductByProductKey() called`);
+    try {
+        let key = req.params.key;
+        let products = await productsModel.getAllproductsByKey("key",key);
+        return res.status(200).json({
+            status: `success`,
+            message: successMessage,
+            statusCode: 200,
+            data: products.rows
+        })
+    }
+    catch (error) {
+        logger.error(`${fileName} getAllProductByProductKey() ${error.message}`);
+        return res.status(500).json({
+            statusCode: 500,
+            status: `error`,
+            message: error.message
+        })
+    }
+}
