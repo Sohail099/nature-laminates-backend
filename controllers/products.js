@@ -12,10 +12,11 @@ module.exports.addProduct = async (req, res) => {
         logger.info(`${fileName} addProduct() called`);
         let files = req.files;
         let firebaseAdmin = req.firebaseAdmin;
-        let { name, categorykey, productcode, dimension_unit, width, length, price } = req.body;
+        let { name, categorykey, productcode, dimension_unit, width, length, price, description } = req.body;
         let columns = [
             "name",
             "category_key",
+            "description",
             "product_code",
             "dimension_unit",
             "width",
@@ -23,7 +24,7 @@ module.exports.addProduct = async (req, res) => {
             "price"
         ];
         let values = [
-            name, categorykey, productcode, dimension_unit, width, length, price
+            name, categorykey, description, productcode, dimension_unit, width, length, price
         ]
         let result = await productsModel.addProducts(columns, values);
         if (result.rowCount) {
