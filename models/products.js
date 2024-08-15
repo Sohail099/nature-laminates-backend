@@ -103,12 +103,43 @@ module.exports.updateProduct = async (columnsToUpdate, valuesForUpdate, key) => 
 
 module.exports.getAllproductsByKey = async (column, value, status) => {
     logger.info(`${fileName} getAllproductsByKey() called`);
-    let sqlQuery = selectFromTable("products", ["*"]);
-    sqlQuery += ` where ${column}= $1`;
+    let sqlQuery = `
+    SELECT 
+        p.*, 
+        COALESCE(json_agg(
+            json_build_object(
+                'key', m.key,
+                'product_key', m.product_key,
+                'url', m.url,
+                'media_type', m.media_type,
+                'status', m.status,
+                'name', m.name,
+                'created_at', m.created_at,
+                'updated_at', m.updated_at,
+                'added_by', m.added_by
+            )
+        ) FILTER (WHERE m.key IS NOT NULL), '[]') AS media
+    FROM 
+        products p
+    LEFT JOIN 
+        media m ON m.product_key = p.key
+    WHERE 
+        p.${column} = $1
+`;
 
     if (status != null) {
-        sqlQuery += ` AND status='${status}'`;
+        sqlQuery += ` AND p.status = '${status}'`;
     }
+
+    sqlQuery += `
+    GROUP BY 
+        p.key
+    ORDER BY 
+        p.key DESC;
+`;
+
+    // Execute the query with your preferred database method
+
     let data = [value];
     try {
         let result = await dbUtil.sqlToDB(sqlQuery, data);
