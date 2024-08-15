@@ -35,7 +35,7 @@ module.exports.addProduct = async (req, res) => {
                 let mediaColumns = [];
                 let mediaValues = [];
                 mediaColumns.push("key", "url", "product_key", "media_type", "name");
-                let filePath = `Product/${details.key}/${mediaKey}`;
+                let filePath = `Products/${details.key}/${mediaKey}`;
                 let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, mediaKey);
 
                 if (uploadResult.status) {
@@ -95,7 +95,7 @@ module.exports.removeProducts = async (req, res) => {
         let firebaseAdmin = req.firebaseAdmin;
         let result = await productsModel.removeProduct(key);
         if (result.rowCount) {
-            let filePath = `Product/${result.rows[0]['key']}`;
+            let filePath = `Products/${result.rows[0]['key']}`;
             await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
             return res.status(200).json({
                 status: `success`,
@@ -159,8 +159,8 @@ module.exports.getAllProductByCategorieKey = async (req, res) => {
 
     try {
         let categoriesKey = req.params.categoryId;
-        let {status} = req.query;
-        let products = await productsModel.getAllproductsByKey("category_Key",categoriesKey,status);
+        let { status } = req.query;
+        let products = await productsModel.getAllproductsByKey("category_Key", categoriesKey, status);
         return res.status(200).json({
             status: `success`,
             message: successMessage,
@@ -182,7 +182,7 @@ module.exports.getAllProductByProductKey = async (req, res) => {
     logger.info(`${fileName} getAllProductByProductKey() called`);
     try {
         let key = req.params.key;
-        let products = await productsModel.getAllproductsByKey("key",key);
+        let products = await productsModel.getAllproductsByKey("key", key);
         return res.status(200).json({
             status: `success`,
             message: successMessage,

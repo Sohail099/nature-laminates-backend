@@ -1,6 +1,7 @@
 const fileName = `controller-categories.js`;
 const logger = require('../utils/other/logger');
 const categoriesModel = require('../models/categories');
+const productsModel = require("../models/products");
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
@@ -152,12 +153,21 @@ module.exports.removeCategory = async (req, res) => {
         logger.info(`${fileName} removeCategory() called`);
         let { key } = req.body;
         let firebaseAdmin = req.firebaseAdmin;
+        let productToBeDeleted = await productsModel.getProductToBeDeletedList(key);
+        console.log("Data : ", productToBeDeleted.rows);
         let result = await categoriesModel.removeCategory(key);
         if (result.rowCount) {
             let filePath = `Categories/${result.rows[0]['key']}`;
             let photo = result.rows[0]['photo'];
             if (photo != null) {
                 await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
+            }
+            if (productToBeDeleted.rows[0]['product_keys'] != null) {
+                productToBeDeleted = productToBeDeleted.rows[0]['product_keys']
+                for (let index = 0; index < productToBeDeleted.length; index++) {
+                    let filePath = `Products/${productToBeDeleted[index]}`;
+                    await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
+                }
             }
             return res.status(200).json({
                 status: `success`,

@@ -101,11 +101,11 @@ module.exports.updateProduct = async (columnsToUpdate, valuesForUpdate, key) => 
     }
 };
 
-module.exports.getAllproductsByKey = async (column, value,status) => {
-    logger.info(`${fileName} getAllproducts() called`);
-    let sqlQuery =selectFromTable("products",["*"]) ;
+module.exports.getAllproductsByKey = async (column, value, status) => {
+    logger.info(`${fileName} getAllproductsByKey() called`);
+    let sqlQuery = selectFromTable("products", ["*"]);
     sqlQuery += ` where ${column}= $1`;
-   
+
     if (status != null) {
         sqlQuery += ` AND status='${status}'`;
     }
@@ -115,7 +115,22 @@ module.exports.getAllproductsByKey = async (column, value,status) => {
         return result;
     }
     catch (error) {
-        logger.error(`${fileName} getAllproducts() ${error.message}`);
+        logger.error(`${fileName} getAllproductsByKey() ${error.message}`);
+        throw new Error(error.message);
+    }
+}
+
+
+module.exports.getProductToBeDeletedList = async (value) => {
+    logger.info(`${fileName} getProductToBeDeletedList() called`);
+    let sqlQuery = `select array_agg(key) as product_keys from products p where p.category_key = $1;`
+    let data = [value];
+    try {
+        let result = await dbUtil.sqlToDB(sqlQuery, data);
+        return result;
+    }
+    catch (error) {
+        logger.error(`${fileName} getProductToBeDeletedList() ${error.message}`);
         throw new Error(error.message);
     }
 }
