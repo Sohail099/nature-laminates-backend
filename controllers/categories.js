@@ -4,6 +4,7 @@ const categoriesModel = require('../models/categories');
 const productsModel = require("../models/products");
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
+const notFoundMessage = 'Requested resource not found';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
 
 
@@ -56,12 +57,21 @@ module.exports.getCategoryDetails = async (req, res) => {
         logger.info(`${fileName} getCategoryDetails() called`);
         let { categoryId } = req.params;
         let categoryDetails = await categoriesModel.getCategoryDetails(categoryId);
-        return res.status(200).json({
-            status: `success`,
-            message: successMessage,
-            statusCode: 200,
-            data: categoryDetails.rows[0]
-        })
+        if (categoryDetails.rowCount > 0) {
+            return res.status(200).json({
+                status: `success`,
+                message: successMessage,
+                statusCode: 200,
+                data: categoryDetails.rows[0]
+            })
+        }
+        else {
+            return res.status(404).json({
+                status: `not found`,
+                message: notFoundMessage,
+                statusCode: 404
+            })
+        }
     }
     catch (error) {
         logger.error(`${fileName} getCategoryDetails() ${error.message}`);
