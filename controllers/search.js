@@ -1,10 +1,10 @@
 const fileName = "controller-searchProduct.js";
 const logger = require('../utils/other/logger');
-const searchModel = require("../models/productSearch");
+const searchModel = require("../models/search");
 
-module.exports.searchItems = async (req, res) => {
+module.exports.search = async (req, res) => {
     try {
-        logger.info(`${fileName} searchItems() called`);
+        logger.info(`${fileName} search() called`);
         const { query } = req.query;
         if (!query) {
             return res.status(400).json({
@@ -13,7 +13,7 @@ module.exports.searchItems = async (req, res) => {
                 message: 'Search query is required'
             });
         }
-        let items = await searchModel.searchItems(query);
+        let items = await searchModel.search(query);
         return res.status(200).json({
             status: 'success',
             message: 'Items retrieved successfully',
@@ -21,7 +21,7 @@ module.exports.searchItems = async (req, res) => {
             data: items.rows
         });
     } catch (error) {
-        logger.error(`${fileName} searchItems() ${error.message}`);
+        logger.error(`${fileName} search() ${error.message}`);
         return res.status(500).json({
             statusCode: 500,
             status: 'error',
