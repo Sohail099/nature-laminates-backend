@@ -67,7 +67,6 @@ module.exports.addProduct = async (req, res) => {
         })
     }
 }
-
 module.exports.getAllProduct = async (req, res) => {
     try {
         logger.info(`${fileName} getAllProduct() called`);
@@ -177,18 +176,27 @@ module.exports.getAllProductByCategorieKey = async (req, res) => {
         })
     }
 }
-
 module.exports.getAllProductByProductKey = async (req, res) => {
     logger.info(`${fileName} getAllProductByProductKey() called`);
     try {
-        let key = req.params.key;
+        let { key } = req.params;
         let products = await productsModel.getAllproductsByKey("key", key);
-        return res.status(200).json({
-            status: `success`,
-            message: successMessage,
-            statusCode: 200,
-            data: products.rows
-        })
+        if (products.rowCount > 0) {
+            return res.status(200).json({
+                status: `success`,
+                message: successMessage,
+                statusCode: 200,
+                data: products.rows
+            })
+        } else {
+            return res.status(404).json({
+                status: `error`,
+                message: `No product found`,
+                statusCode: 404,
+                data: []
+            })
+        }
+
     }
     catch (error) {
         logger.error(`${fileName} getAllProductByProductKey() ${error.message}`);
@@ -199,3 +207,4 @@ module.exports.getAllProductByProductKey = async (req, res) => {
         })
     }
 }
+
