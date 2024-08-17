@@ -16,6 +16,7 @@ const upload = multer({ storage: storage });
 // }
 const AWS = require('aws-sdk');
 const admin = require('firebase-admin');
+const { sendWarningToSlack } = require('./helpers/slackHelper');
 
 const S3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -98,6 +99,7 @@ if (cluster.isMaster) {
             res.send = function (data) {
                 if (res.statusCode >= 500) {
                     logger.error(`@ ${new Date().toISOString()} || ${req.originalUrl} || ${res.statusCode}`);
+                    sendWarningToSlack(req, res, data)
                 }
                 else {
                     logger.info(`@${new Date().toISOString()} || ${req.originalUrl} || ${res.statusCode}`);

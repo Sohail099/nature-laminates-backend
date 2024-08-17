@@ -23,7 +23,7 @@ module.exports.addMedia = async (req, res) => {
             let mediaValues = [];
             mediaColumns.push("url", "product_key", "media_type", "name");
 
-            let filePath = `Product/${productkey}/${mediaKey}`;
+            let filePath = `Products/${productkey}/${mediaKey}`;
             let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, mediaKey);
             if (uploadResult.status) {
 
@@ -72,7 +72,7 @@ module.exports.removeMedia = async (req, res) => {
         let firebaseAdmin = req.firebaseAdmin;
         let result = await mediaModel.removeMedia(key);
         if (result.rowCount) {
-            let filePath = `Product/${result.rows[0]['key']}`;
+            let filePath = `Products/${result.rows[0]['key']}`;
             await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
             return res.status(200).json({
                 status: `success`,

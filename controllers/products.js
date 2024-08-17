@@ -35,7 +35,7 @@ module.exports.addProduct = async (req, res) => {
                 let mediaColumns = [];
                 let mediaValues = [];
                 mediaColumns.push("key", "url", "product_key", "media_type", "name");
-                let filePath = `Product/${details.key}/${mediaKey}`;
+                let filePath = `Products/${details.key}/${mediaKey}`;
                 let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, mediaKey);
 
                 if (uploadResult.status) {
@@ -94,7 +94,7 @@ module.exports.removeProducts = async (req, res) => {
         let firebaseAdmin = req.firebaseAdmin;
         let result = await productsModel.removeProduct(key);
         if (result.rowCount) {
-            let filePath = `Product/${result.rows[0]['key']}`;
+            let filePath = `Products/${result.rows[0]['key']}`;
             await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
             return res.status(200).json({
                 status: `success`,
@@ -160,23 +160,12 @@ module.exports.getAllProductByCategorieKey = async (req, res) => {
         let categoriesKey = req.params.categoryId;
         let { status } = req.query;
         let products = await productsModel.getAllproductsByKey("category_Key", categoriesKey, status);
-
-
-        if (products.rowCount > 0) {
-            return res.status(200).json({
-                status: `success`,
-                message: successMessage,
-                statusCode: 200,
-                data: products.rows
-            })
-        } else {
-            return res.status(404).json({
-                status: `error`,
-                message: `No product found in this category`,
-                statusCode: 404,
-                data: []
-            })
-        }
+        return res.status(200).json({
+            status: `success`,
+            message: successMessage,
+            statusCode: 200,
+            data: products.rows
+        })
     }
     catch (error) {
         logger.error(`${fileName} getAllProductByCategorieKey() ${error.message}`);
@@ -192,7 +181,6 @@ module.exports.getAllProductByProductKey = async (req, res) => {
     try {
         let { key } = req.params;
         let products = await productsModel.getAllproductsByKey("key", key);
-        console.log("se ()()()()()()()())", products)
         if (products.rowCount > 0) {
             return res.status(200).json({
                 status: `success`,
