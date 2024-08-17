@@ -5,6 +5,7 @@ const categoriesRouter = require("./categoriesRoutes");
 const carouselsRouter = require("./carouselsRoutes");
 const productsRouter = require("./productRoutes");
 const mediaRouter = require("./mediaRoutes");
+const searchRouter = require('./searchRoutes');
 const { validateAuthenticationToken, checkIsAdmin } = require("../middlewares/authentication");
 
 ROUTER.get("/check", async (req, res) => {
@@ -21,7 +22,8 @@ ROUTER.get("/callback", (req, res) => {
 ROUTER.use("/categories", categoriesRouter);
 ROUTER.use("/carousels", carouselsRouter);
 ROUTER.use("/products",productsRouter);
-ROUTER.use("/media",mediaRouter)
+ROUTER.use("/media",mediaRouter);
+ROUTER.use("/search",searchRouter);
 // ROUTER.use("/xero", validateAuthenticationToken, xeroRouter);
 
 module.exports = ROUTER;
