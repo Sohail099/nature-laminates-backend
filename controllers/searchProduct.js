@@ -1,4 +1,4 @@
-const fileName = "controller-products.js";
+const fileName = "controller-searchProduct.js";
 const logger = require('../utils/other/logger');
 const searchModel = require("../models/productSearch");
 
