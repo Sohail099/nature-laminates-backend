@@ -186,7 +186,7 @@ module.exports.getAllProductByProductKey = async (req, res) => {
                 status: `success`,
                 message: successMessage,
                 statusCode: 200,
-                data: products.rows
+                data: products.rows[0]
             })
         } else {
             return res.status(404).json({
