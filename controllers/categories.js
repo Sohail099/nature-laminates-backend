@@ -225,3 +225,61 @@ module.exports.getAllCategoriesName = async (req, res) => {
         });
     }
 }
+
+module.exports.updateCategory = async (req, res) => {
+    try {
+        logger.info("updateCategory() called");
+        let obj = req.body;
+        let files = req.files;
+        let firebaseAdmin = req.firebaseAdmin;
+        let categoryKey = obj.key;
+        let restrictedFields = ['id', 'key', 'created_at', 'added_by'];
+
+        for (let i = 0; i < restrictedFields.length; i++) {
+            delete obj[restrictedFields[i]];
+        }
+        let updateColumns = [];
+        let updateValues = [];
+        for (let index = 0; index < files.length; index++) {
+            const element = files[index];
+            let filePath = `Categories/${categoryKey}/${element['fieldname']}`;
+            let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, categoryKey);
+            if (uploadResult.status == true) {
+                updateColumns.push(element['fieldname']);
+                updateValues.push(uploadResult.url);
+            } else {
+                return res.status(400).json({
+                    status: `error`,
+                    message: uploadResult.message,
+                    statusCode: 400,
+                    data: []
+                });
+            }
+        }
+        for (let [key, value] of Object.entries(obj)) {
+            updateColumns.push(key);
+            updateValues.push(value);
+        }
+        updateValues.push(categoryKey);
+        let updateDetails = await categoriesModel.updateCategoryDetails(updateColumns, updateValues);
+        if (updateDetails.rowCount > 0) {
+            return res.status(200).json({
+                status: `success`,
+                message: `Category updated successfully`,
+                statusCode: 200,
+                data: updateDetails.rows
+            });
+        } else {
+            return res.status(400).json({
+                status: `error`,
+                message: `Failed to update category`,
+                statusCode: 400,
+                data: []
+            });
+        }
+
+    } catch (error) {
+        logger.error(`updateCategory() ${error.message}`);
+        return res.status(500).json({ status: 'error', message: error.message, statusCode: 500 });
+    }
+}

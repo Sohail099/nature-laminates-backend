@@ -8,5 +8,6 @@ ROUTER.get('/listCategoryDropdown', categoriesController.getListCategoryDropdown
 ROUTER.get('/categoryDetails/:categoryId', categoriesController.getCategoryDetails);
 ROUTER.delete('/remove', categoriesController.removeCategory);
 ROUTER.get('/getAllCategoryNames',categoriesController.getAllCategoriesName);
+ROUTER.put('/updateCategory',categoriesController.updateCategory);
 
 module.exports = ROUTER;
