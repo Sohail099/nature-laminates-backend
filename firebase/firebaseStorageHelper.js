@@ -56,7 +56,8 @@ const deleteDirectoryFromStorage = async (firebaseAdmin, filePath) => {
 
 }
 
+
 module.exports = {
   uploadImageToStorage,
-  deleteDirectoryFromStorage
+  deleteDirectoryFromStorage,
 }
