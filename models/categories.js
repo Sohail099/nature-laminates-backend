@@ -113,3 +113,25 @@ module.exports.removeCategory = async (key) => {
         throw new Error(error.message);
     }
 }
+
+module.exports.getAllCategoryNames = async (status, limit) => {
+    logger.info(`${fileName} getAllCategoryNames() called`);
+    let sqlQuery = selectFromTable("categories", ["name"]);
+    if (status != null) {
+        sqlQuery += ` WHERE status='${status}'`;
+    }
+    sqlQuery += " ORDER BY id DESC";
+    if (limit != null) {
+        sqlQuery += ` LIMIT ${limit};`;
+    }
+
+    let data = [];
+    try {
+        let result = await dbUtil.sqlToDB(sqlQuery, data);
+        let categoryNames = result.rows.map(row => row.name);
+        return categoryNames;
+    } catch (error) {
+        logger.error(`${fileName} getAllCategoryNames() ${error.message}`);
+        throw new Error(error.message);
+    }
+}
