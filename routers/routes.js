@@ -18,7 +18,7 @@ ROUTER.get("/callback", (req, res) => {
 
 // ROUTER.post("/update", airtableHelp.getTaxTableData)
 // ROUTER.use("/role", validateAuthenticationToken, checkIsAdmin, rolesRouter);
-// ROUTER.use("/user", userssRouter);
+ROUTER.use("/user", userssRouter);
 ROUTER.use("/categories", categoriesRouter);
 ROUTER.use("/carousels", carouselsRouter);
 ROUTER.use("/products",productsRouter);
