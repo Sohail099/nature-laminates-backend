@@ -212,13 +212,12 @@ module.exports.getAllProductByProductKey = async (req, res) => {
 module.exports.getAllProductName = async (req, res) => {
     try {
         logger.info(`${fileName} getAllProductName() called`);
-        let { status, limit } = req.query;
-        let ProductNames = await productsModel.getAllProductNames(status, limit);
+        let ProductNames = await productsModel.getAllProductNames();
         return res.status(200).json({
             status: 'success',
             message: successMessage,
             statusCode: 200,
-            data: ProductNames
+            data: ProductNames.rows[0].products_names
         });
     } catch (error) {
         logger.error(`${fileName} getAllProductName() ${error.message}`);

@@ -165,22 +165,13 @@ module.exports.getProductToBeDeletedList = async (value) => {
 }
 
 
-module.exports.getAllProductNames = async (status, limit) => {
+module.exports.getAllProductNames = async () => {
     logger.info(`${fileName} getAllProductNames() called`);
-    let sqlQuery = selectFromTable("products", ["name"]);
-    if (status != null) {
-        sqlQuery += ` WHERE status='${status}'`;
-    }
-    sqlQuery += " ORDER BY id DESC";
-    if (limit != null) {
-        sqlQuery += ` LIMIT ${limit};`;
-    }
-
+    let sqlQuery = `SELECT ARRAY_AGG(name ORDER BY name ASC) AS Products_names FROM products`;
     let data = [];
     try {
         let result = await dbUtil.sqlToDB(sqlQuery, data);
-        let ProductNames = result.rows.map(row => row.name);
-        return ProductNames;
+        return result
     } catch (error) {
         logger.error(`${fileName} getAllProductNames() ${error.message}`);
         throw new Error(error.message);

@@ -209,13 +209,12 @@ module.exports.removeCategory = async (req, res) => {
 module.exports.getAllCategoriesName = async (req, res) => {
     try {
         logger.info(`${fileName} getAllCategoriesName() called`);
-        let { status, limit } = req.query;
-        let categoryNames = await categoriesModel.getAllCategoryNames(status, limit);
+        let categoryNames = await categoriesModel.getAllCategoryNames();
         return res.status(200).json({
             status: 'success',
             message: successMessage,
             statusCode: 200,
-            data: categoryNames
+            data: categoryNames.rows[0].category_names
         });
     } catch (error) {
         logger.error(`${fileName} getAllCategoriesName() ${error.message}`);
