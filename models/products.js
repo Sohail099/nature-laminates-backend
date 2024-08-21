@@ -103,9 +103,11 @@ module.exports.updateProduct = async (columnsToUpdate, valuesForUpdate, key) => 
 
 module.exports.getAllproductsByKey = async (column, value, status) => {
     logger.info(`${fileName} getAllproductsByKey() called`);
+    
     let sqlQuery = `
     SELECT 
         p.*, 
+        c.name AS category_name,
         COALESCE(json_agg(
             json_build_object(
                 'key', m.key,
@@ -123,20 +125,20 @@ module.exports.getAllproductsByKey = async (column, value, status) => {
         products p
     LEFT JOIN 
         media m ON m.product_key = p.key
+    LEFT JOIN 
+        categories c ON c.key = p.category_key
     WHERE 
         p.${column} = $1
-`;
-
+    `;
     if (status != null) {
         sqlQuery += ` AND p.status = '${status}'`;
     }
-
     sqlQuery += `
     GROUP BY 
-        p.key
+        p.key, c.name
     ORDER BY 
         p.key DESC;
-`;
+    `;
 
     let data = [value];
     try {
@@ -148,6 +150,7 @@ module.exports.getAllproductsByKey = async (column, value, status) => {
         throw new Error(error.message);
     }
 }
+
 
 
 module.exports.getProductToBeDeletedList = async (value) => {
