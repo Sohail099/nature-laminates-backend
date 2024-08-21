@@ -138,8 +138,6 @@ module.exports.getAllproductsByKey = async (column, value, status) => {
         p.key DESC;
 `;
 
-    // Execute the query with your preferred database method
-
     let data = [value];
     try {
         let result = await dbUtil.sqlToDB(sqlQuery, data);
@@ -162,6 +160,20 @@ module.exports.getProductToBeDeletedList = async (value) => {
     }
     catch (error) {
         logger.error(`${fileName} getProductToBeDeletedList() ${error.message}`);
+        throw new Error(error.message);
+    }
+}
+
+
+module.exports.getAllProductNames = async () => {
+    logger.info(`${fileName} getAllProductNames() called`);
+    let sqlQuery = `SELECT ARRAY_AGG(name ORDER BY name ASC) AS Products_names FROM products`;
+    let data = [];
+    try {
+        let result = await dbUtil.sqlToDB(sqlQuery, data);
+        return result
+    } catch (error) {
+        logger.error(`${fileName} getAllProductNames() ${error.message}`);
         throw new Error(error.message);
     }
 }

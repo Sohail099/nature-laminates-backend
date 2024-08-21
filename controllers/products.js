@@ -208,3 +208,23 @@ module.exports.getAllProductByProductKey = async (req, res) => {
     }
 }
 
+
+module.exports.getAllProductName = async (req, res) => {
+    try {
+        logger.info(`${fileName} getAllProductName() called`);
+        let ProductNames = await productsModel.getAllProductNames();
+        return res.status(200).json({
+            status: 'success',
+            message: successMessage,
+            statusCode: 200,
+            data: ProductNames.rows[0].products_names
+        });
+    } catch (error) {
+        logger.error(`${fileName} getAllProductName() ${error.message}`);
+        return res.status(500).json({
+            statusCode: 500,
+            status: 'error',
+            message: error.message
+        });
+    }
+}

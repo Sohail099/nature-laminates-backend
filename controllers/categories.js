@@ -205,3 +205,23 @@ module.exports.removeCategory = async (req, res) => {
         })
     }
 }
+
+module.exports.getAllCategoriesName = async (req, res) => {
+    try {
+        logger.info(`${fileName} getAllCategoriesName() called`);
+        let categoryNames = await categoriesModel.getAllCategoryNames();
+        return res.status(200).json({
+            status: 'success',
+            message: successMessage,
+            statusCode: 200,
+            data: categoryNames.rows[0].category_names
+        });
+    } catch (error) {
+        logger.error(`${fileName} getAllCategoriesName() ${error.message}`);
+        return res.status(500).json({
+            statusCode: 500,
+            status: 'error',
+            message: error.message
+        });
+    }
+}
