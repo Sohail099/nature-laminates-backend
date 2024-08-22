@@ -6,7 +6,7 @@ const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const notFoundMessage = 'Requested resource not found';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
-const latterFormate = require("../utils/other/caseSensitive");
+const latterFormat = require("../utils/other/caseSensitive");
 
 
 module.exports.getAllCategories = async (req, res) => {
@@ -94,8 +94,8 @@ module.exports.addCategory = async (req, res) => {
             "name",
             "description"
         ];
-        let inputName = await latterFormate.formatString(name);
-        let inputDescription = await latterFormate.formatString(description)
+        let inputName = latterFormat.formatString(name);
+        let inputDescription = latterFormat.formatString(description)
         let values = [
             inputName,
             inputDescription
@@ -242,10 +242,10 @@ module.exports.updateCategory = async (req, res) => {
             delete obj[restrictedFields[i]];
         }
         if (obj.name) {
-            obj.name = latterFormate.formatString(obj.name);
+            obj.name = latterFormat.formatString(obj.name);
         }
         if (obj.description) {
-            obj.description = latterFormate.formatString(obj.description);
+            obj.description = latterFormat.formatString(obj.description);
         }
         let updateColumns = [];
         let updateValues = [];

@@ -1,15 +1,8 @@
 module.exports.formatString = (input) => {
-    // console.log("se the @@@@@@@@@@@@@@@@@@@@@", input);
-    let lowerCaseString = input.toLowerCase();
-    let sentences = lowerCaseString.split('.');
-    let formattedSentences = sentences.map(sentence => {
-        let trimmedSentence = sentence.trim();
-        let words = trimmedSentence.split(' ').map(word => {
-            return word.charAt(0).toUpperCase() + word.slice(1);
-        });
-        return words.join(' ');
-    });
-
-    let result = formattedSentences.join('. ');
-    return result.trim().replace(/\.\s*$/, '');
+    return input.toLowerCase()
+                .split('.')
+                .map(sentence => sentence.trim())
+                .filter(sentence => sentence.length > 0)
+                .map(sentence => sentence.charAt(0).toUpperCase() + sentence.slice(1))
+                .join('. ') + '.';
 }

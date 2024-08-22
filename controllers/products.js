@@ -5,7 +5,7 @@ const mediaModel = require('../models/media');
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper");
-const latterFormate = require("../utils/other/caseSensitive");
+const latterFormat = require("../utils/other/caseSensitive");
 const uuid = require('uuid')
 
 module.exports.addProduct = async (req, res) => {
@@ -24,8 +24,8 @@ module.exports.addProduct = async (req, res) => {
             "length",
             "price"
         ];   
-        let inputName = await latterFormate.formatString(name);
-        let inputDescription = await latterFormate.formatString(description)
+        let inputName =  latterFormat.formatString(name);
+        let inputDescription =  latterFormat.formatString(description)
 
         let values = [
             inputName, categorykey, inputDescription, product_code, dimension_unit, width, length, price
@@ -136,10 +136,10 @@ module.exports.updateProduct = async (req, res) => {
             }
 
         if (obj.name) {
-            obj.name = formatString(obj.name);
+            obj.name = latterFormat.formatString(obj.name);
         }
         if (obj.description) {
-            obj.description = formatString(obj.description);
+            obj.description = latterFormat.formatString(obj.description);
         }
         let columnsToUpdate = Object.entries(obj).map(([key, value]) => key);
         let valuesForUpdate = Object.entries(obj).map(([key, value]) => value);
