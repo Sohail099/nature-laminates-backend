@@ -6,6 +6,7 @@ const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const notFoundMessage = 'Requested resource not found';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
+const latterFormate = require("../utils/other/caseSensitive");
 
 
 module.exports.getAllCategories = async (req, res) => {
@@ -93,9 +94,11 @@ module.exports.addCategory = async (req, res) => {
             "name",
             "description"
         ];
+        let inputName = await latterFormate.formatString(name);
+        let inputDescription = await latterFormate.formatString(description)
         let values = [
-            name,
-            description
+            inputName,
+            inputDescription
         ]
         let result = await categoriesModel.addCategory(columns, values);
         if (result.rowCount) {
@@ -238,22 +241,30 @@ module.exports.updateCategory = async (req, res) => {
         for (let i = 0; i < restrictedFields.length; i++) {
             delete obj[restrictedFields[i]];
         }
+        if (obj.name) {
+            obj.name = latterFormate.formatString(obj.name);
+        }
+        if (obj.description) {
+            obj.description = latterFormate.formatString(obj.description);
+        }
         let updateColumns = [];
         let updateValues = [];
-        for (let index = 0; index < files.length; index++) {
-            const element = files[index];
-            let filePath = `Categories/${categoryKey}/${element['fieldname']}`;
-            let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, categoryKey);
-            if (uploadResult.status == true) {
-                updateColumns.push(element['fieldname']);
-                updateValues.push(uploadResult.url);
-            } else {
-                return res.status(400).json({
-                    status: `error`,
-                    message: uploadResult.message,
-                    statusCode: 400,
-                    data: []
-                });
+        if (files && files.length > 0) {
+            for (let index = 0; index < files.length; index++) {
+                const element = files[index];
+                let filePath = `Categories/${categoryKey}/${element['fieldname']}`;
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, categoryKey);
+                if (uploadResult.status == true) {
+                    updateColumns.push(element['fieldname']);
+                    updateValues.push(uploadResult.url);
+                } else {
+                    return res.status(400).json({
+                        status: `error`,
+                        message: uploadResult.message,
+                        statusCode: 400,
+                        data: []
+                    });
+                }
             }
         }
         for (let [key, value] of Object.entries(obj)) {
