@@ -46,7 +46,7 @@ module.exports.generateRefreshToken = async(userDetails)=>
     };
     let options ={
         issuer:"midlal.com",
-        expiresIn:'1m'
+        expiresIn:'1h'
     };
     let refreshToken=jwt.sign(payload,process.env.REFRESH_TOKEN_SECRET,options);
     return refreshToken;
