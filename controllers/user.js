@@ -99,9 +99,9 @@ module.exports.logIn = async (req, res) => {
             "access_token",
         ];
         const schema = userSchema();
-        const { error, value } = schema.validate(req.body, {context: 'signup', abortEarly: false });
+        const { error, value } = schema.validate(req.body, {context: 'login', abortEarly: false });
         if (error) {
-            logger.error(`Signup error: ${JSON.stringify(error.details)}`);
+            logger.error(`login error: ${JSON.stringify(error.details)}`);
             return res.status(400).json({ status: 'error', message: error.details.map(e => e.message), statusCode: 400 });
         }
         let Email = (value["email"]).toLowerCase();
@@ -189,6 +189,41 @@ module.exports.validateToken = async (req,res)=>{
 
     } catch (error) {
         logger.error(`validateToken error: ${error.message}`);
+        return res.status(500).json({ status: 'error', message: error.message, statusCode: 500 });
+    }
+}
+
+module.exports.logout = async (req, res) => {
+    try {
+        logger.info("logout api called()");
+        let key = req.body.key;
+        let columnsToUpdate = [
+            "access_token",
+            "refresh_token",      
+        ]
+        let valuesForUpdate = [
+            null,
+            null,
+        ]
+        let logout = await userModel.updateUserDetails(columnsToUpdate, valuesForUpdate,key)
+        if (logout.rowCount > 0) {
+            delete logout.rows[0]["password"];
+            return res.status(200).json({
+                status: `success`,
+                message: `logout Successfully !`,
+                statusCode: 200,
+                data: logout.rows[0]
+            })
+        } else {
+            return res.status(400).json({
+                status: `error`,
+                message: errMessage,
+                statusCode: 400,
+                data: []
+            })
+        }
+    } catch (error) {
+        logger.error(` logout  error: ${error.message}`);
         return res.status(500).json({ status: 'error', message: error.message, statusCode: 500 });
     }
 }
