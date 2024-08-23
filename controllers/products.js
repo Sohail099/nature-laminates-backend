@@ -4,7 +4,8 @@ const productsModel = require('../models/products');
 const mediaModel = require('../models/media');
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
-const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
+const firebaseStorageHelper = require("../firebase/firebaseStorageHelper");
+const latterFormat = require("../utils/other/caseSensitive");
 const uuid = require('uuid')
 
 module.exports.addProduct = async (req, res) => {
@@ -22,9 +23,12 @@ module.exports.addProduct = async (req, res) => {
             "width",
             "length",
             "price"
-        ];
+        ];   
+        let inputName =  latterFormat.formatString(name);
+        let inputDescription =  latterFormat.formatString(description)
+
         let values = [
-            name, categorykey, description, product_code, dimension_unit, width, length, price
+            inputName, categorykey, inputDescription, product_code, dimension_unit, width, length, price
         ]
         let result = await productsModel.addProducts(columns, values);
         if (result.rowCount) {
@@ -129,6 +133,13 @@ module.exports.updateProduct = async (req, res) => {
         let restrictedKeyforUpdate = ['id', 'key', 'created_at', 'added_by']
         for (let i = 0; i < restrictedKeyforUpdate.length; i++) {
             delete obj[restrictedKeyforUpdate[i]];
+            }
+
+        if (obj.name) {
+            obj.name = latterFormat.formatString(obj.name);
+        }
+        if (obj.description) {
+            obj.description = latterFormat.formatString(obj.description);
         }
         let columnsToUpdate = Object.entries(obj).map(([key, value]) => key);
         let valuesForUpdate = Object.entries(obj).map(([key, value]) => value);
