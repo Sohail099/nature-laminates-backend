@@ -180,10 +180,10 @@ module.exports.validateToken = async (req,res)=>{
         }
       }
       else {
-        return res.status(404).json({
+        return res.status(403).json({
           status: 'error',
           message: " Access token not found",
-          statusCode: 404
+          statusCode: 403
         })
       }   
 
