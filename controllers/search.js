@@ -6,13 +6,13 @@ module.exports.search = async (req, res) => {
     try {
         logger.info(`${fileName} search() called`);
         const { query } = req.query;
-        if (!query) {
-            return res.status(400).json({
-                status: 'error',
-                statusCode: 400,
-                message: 'Search query is required'
-            });
-        }
+        // if (!query) {
+        //     return res.status(400).json({
+        //         status: 'error',
+        //         statusCode: 400,
+        //         message: 'Search query is required'
+        //     });
+        // }
         let items = await searchModel.search(query);
         return res.status(200).json({
             status: 'success',

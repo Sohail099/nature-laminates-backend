@@ -4,15 +4,15 @@ const fileName = 'searchModel.js';
 
 module.exports.search = async (query) => {
     logger.info(`${fileName} search() called`);
-
+    let data = []
     let sqlQuery = `
     SELECT * 
-    FROM searchview 
-    WHERE name ILIKE $1 
-    ORDER BY name ASC;
-    `;
-
-    let data = [`%${query}%`];
+    FROM searchview`;
+    if (query) {
+        sqlQuery += " WHERE name ILIKE $1 ";
+        data = [`%${query}%`];
+    }
+    sqlQuery += " ORDER BY name ASC ";
 
     try {
         let result = await dbUtil.sqlToDB(sqlQuery, data);
