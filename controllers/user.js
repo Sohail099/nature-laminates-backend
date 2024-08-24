@@ -8,7 +8,7 @@ const validate = require("../utils/auth_related/validate");
 const PASSWORD = require("../utils/auth_related/password");
 const Token_Helper = require("../utils/auth_related/token");
 
-const {userSchema,} = require("../utils/other/joi-validator");
+const { userSchema, } = require("../utils/other/joi-validator");
 
 
 
@@ -28,11 +28,11 @@ module.exports.signUp = async (req, res) => {
         ];
 
         const schema = userSchema();
-        const { error, value } = schema.validate(req.body, {context: 'signup', abortEarly: false });
+        const { error, value } = schema.validate(req.body, { context: 'signup', abortEarly: false });
         if (error) {
             logger.error(`Signup error: ${JSON.stringify(error.details)}`);
             return res.status(400).json({ status: 'error', message: error.details.map(e => e.message), statusCode: 400 });
-        } 
+        }
         const useremail = (req.body.email).toLowerCase();
         //cheack if email is already exist
         const EmailExists = (await userModel.checkColumnExists(tableName = "users", columnName = "email", checkValue = useremail, selectColumns = columns)).rows.length > 0; //++2 ceck
@@ -41,7 +41,7 @@ module.exports.signUp = async (req, res) => {
             logger.error(`Signup error ${errMsg}`);
             return res.status(200).json({ status: 'error', message: errMsg, statusCode: 200 });
         }
-        const password = await PASSWORD.encodePassword(req.body.password);    
+        const password = await PASSWORD.encodePassword(req.body.password);
         const new_access_token = await Token_Helper.generateToken(useremail);
         const new_refresh_token = await Token_Helper.generateRefreshToken(useremail);
 
@@ -63,7 +63,7 @@ module.exports.signUp = async (req, res) => {
                         break;
                     case "refresh_token":
                         data.push(new_refresh_token)
-                        break    
+                        break
                     default:
                         data.push(req.body[columns[i]]);
                         break;
@@ -78,7 +78,7 @@ module.exports.signUp = async (req, res) => {
                 data: result.rows[0]
             });
         }
-        else {            
+        else {
             logger.error(`Signup error: ${errMessage}`);
             return res.status(500).json({ status: 'error', message: errMessage, statusCode: 500 });
         }
@@ -91,15 +91,15 @@ module.exports.signUp = async (req, res) => {
 module.exports.logIn = async (req, res) => {
     logger.info("logIn API called");
     try {
-        const selectColumns = [ 
-            "key",   
+        const selectColumns = [
+            "key",
             "email",
             "name",
             "password",
             "access_token",
         ];
         const schema = userSchema();
-        const { error, value } = schema.validate(req.body, {context: 'login', abortEarly: false });
+        const { error, value } = schema.validate(req.body, { context: 'login', abortEarly: false });
         if (error) {
             logger.error(`login error: ${JSON.stringify(error.details)}`);
             return res.status(400).json({ status: 'error', message: error.details.map(e => e.message), statusCode: 400 });
@@ -120,7 +120,7 @@ module.exports.logIn = async (req, res) => {
         if (same) {
             const key = user["key"];
             const new_access_token = await Token_Helper.generateToken(Email, key);
-            const new_refresh_token = await Token_Helper.generateRefreshToken(Email,key);
+            const new_refresh_token = await Token_Helper.generateRefreshToken(Email, key);
             const columnsToUpdate = [
                 "access_token",
                 "refresh_token"
@@ -157,35 +157,35 @@ module.exports.logIn = async (req, res) => {
     }
 }
 
-module.exports.validateToken = async (req,res)=>{
+module.exports.validateToken = async (req, res) => {
     logger.info("validateToken called ()");
     try {
-    let access_token = req.headers["authorization"];
-      if (access_token) {
-        access_token = access_token.split(" ")[1];
-        let verify = await Token_Helper.validateToken(access_token);
-        if (verify) {  
-            return res.status(200).json({
-                status: 'sucess',
-                message: "Token verified successfully",
-                statusCode: 200
-              })
+        let access_token = req.headers["authorization"];
+        if (access_token) {
+            access_token = access_token.split(" ")[1];
+            let verify = await Token_Helper.validateToken(access_token);
+            if (verify) {
+                return res.status(200).json({
+                    status: 'sucess',
+                    message: "Token verified successfully",
+                    statusCode: 200
+                })
+            }
+            else {
+                return res.status(403).json({
+                    status: 'error',
+                    message: "Invalid Token",
+                    statusCode: 403
+                })
+            }
         }
         else {
-          return res.status(403).json({
-            status: 'error',
-            message: "Invalid Token",
-            statusCode: 403
-          })
+            return res.status(403).json({
+                status: 'error',
+                message: " Access token not found",
+                statusCode: 403
+            })
         }
-      }
-      else {
-        return res.status(403).json({
-          status: 'error',
-          message: " Access token not found",
-          statusCode: 403
-        })
-      }   
 
     } catch (error) {
         logger.error(`validateToken error: ${error.message}`);
@@ -199,13 +199,13 @@ module.exports.logout = async (req, res) => {
         let key = req.body.key;
         let columnsToUpdate = [
             "access_token",
-            "refresh_token",      
+            "refresh_token",
         ]
         let valuesForUpdate = [
             null,
             null,
         ]
-        let logout = await userModel.updateUserDetails(columnsToUpdate, valuesForUpdate,key)
+        let logout = await userModel.updateUserDetails(columnsToUpdate, valuesForUpdate, key)
         if (logout.rowCount > 0) {
             delete logout.rows[0]["password"];
             return res.status(200).json({
