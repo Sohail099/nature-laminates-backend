@@ -4,7 +4,7 @@ const fileName = 'searchModel.js';
 
 module.exports.search = async (query, status, source) => {
     logger.info(`${fileName} search() called`);
-    // let conditionCount = 0;
+    let conditionCount = 0;
     let data = []
     let sqlQuery = `
     SELECT * 
