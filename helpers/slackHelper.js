@@ -3,6 +3,7 @@ const logger = require("../utils/other/logger")
 module.exports.sendWarningToSlack = async (req, res, data) => {
     logger.info("sendWarningToSlack called");
     const URL = process.env.API_FAILURE_SLACK_WEBHOOK_URL;
+    console.log("SLACK URL : ", URL)
     data = JSON.parse(data)
     let message = data.message;
 
