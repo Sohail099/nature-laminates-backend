@@ -24,7 +24,7 @@ module.exports.addMedia = async (req, res) => {
             mediaColumns.push("url", "product_key", "media_type", "name");
 
             let filePath = `Products/${productkey}/${mediaKey}`;
-            let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, mediaKey);
+            let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, mediaKey);
             if (uploadResult.status) {
 
                 mediaValues.push(uploadResult.url, productkey, element['mimetype'], element['originalname']);

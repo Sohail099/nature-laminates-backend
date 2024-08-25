@@ -47,7 +47,7 @@ module.exports.addCarousels = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Carousels/${details.key}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, details.key);
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, details.key);
                 if (uploadResult.status) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);

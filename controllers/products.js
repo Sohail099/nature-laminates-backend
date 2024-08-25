@@ -12,7 +12,6 @@ module.exports.addProduct = async (req, res) => {
     try {
         logger.info(`${fileName} addProduct() called`);
         let files = req.files;
-        let firebaseAdmin = req.firebaseAdmin;
         let { name, categorykey, product_code, dimension_unit, width, length, price, description } = req.body;
         let columns = [
             "name",
@@ -40,7 +39,8 @@ module.exports.addProduct = async (req, res) => {
                 let mediaValues = [];
                 mediaColumns.push("key", "url", "product_key", "media_type", "name");
                 let filePath = `Products/${details.key}/${mediaKey}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, mediaKey);
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, mediaKey);
+                console.log("see file upload",uploadResult);
 
                 if (uploadResult.status) {
                     mediaValues.push(mediaKey, uploadResult.url, details.key, element['mimetype'], element['originalname']);

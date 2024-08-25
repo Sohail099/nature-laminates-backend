@@ -108,7 +108,7 @@ module.exports.addCategory = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Categories/${details.key}/${element['fieldname']}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, details.key);
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, details.key);
                 if (uploadResult.status) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
@@ -173,13 +173,13 @@ module.exports.removeCategory = async (req, res) => {
             let filePath = `Categories/${result.rows[0]['key']}`;
             let photo = result.rows[0]['photo'];
             if (photo != null) {
-                await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
+                await firebaseStorageHelper.deleteDirectoryFromStorage(filePath);
             }
             if (productToBeDeleted.rows[0]['product_keys'] != null) {
                 productToBeDeleted = productToBeDeleted.rows[0]['product_keys']
                 for (let index = 0; index < productToBeDeleted.length; index++) {
                     let filePath = `Products/${productToBeDeleted[index]}`;
-                    await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
+                    await firebaseStorageHelper.deleteDirectoryFromStorage(filePath);
                 }
             }
             return res.status(200).json({
@@ -253,7 +253,7 @@ module.exports.updateCategory = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Categories/${categoryKey}/${element['fieldname']}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, categoryKey);
+                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, categoryKey);
                 if (uploadResult.status == true) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
