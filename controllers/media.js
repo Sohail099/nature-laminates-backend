@@ -4,6 +4,7 @@ const mediaModel = require('../models/media');
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper");
+const awsS3StorageHelper = require("../firebase/awsS3Storaeghelper");
 const uuid = require('uuid');
 
 
@@ -24,7 +25,7 @@ module.exports.addMedia = async (req, res) => {
             mediaColumns.push("url", "product_key", "media_type", "name");
 
             let filePath = `Products/${productkey}/${mediaKey}`;
-            let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, mediaKey);
+            let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, mediaKey);
             if (uploadResult.status) {
 
                 mediaValues.push(uploadResult.url, productkey, element['mimetype'], element['originalname']);

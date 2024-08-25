@@ -6,6 +6,7 @@ const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper");
 const latterFormat = require("../utils/other/caseSensitive");
+const awsS3StorageHelper = require("../firebase/awsS3Storaeghelper");
 const uuid = require('uuid')
 
 module.exports.addProduct = async (req, res) => {
@@ -39,7 +40,7 @@ module.exports.addProduct = async (req, res) => {
                 let mediaValues = [];
                 mediaColumns.push("key", "url", "product_key", "media_type", "name");
                 let filePath = `Products/${details.key}/${mediaKey}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, mediaKey);
+                let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, mediaKey);
                 console.log("see file upload",uploadResult);
 
                 if (uploadResult.status) {

@@ -7,6 +7,7 @@ const successMessage = 'Successfully Done!';
 const notFoundMessage = 'Requested resource not found';
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
 const latterFormat = require("../utils/other/caseSensitive");
+const awsS3StorageHelper = require("../firebase/awsS3Storaeghelper");
 
 
 module.exports.getAllCategories = async (req, res) => {
@@ -88,7 +89,7 @@ module.exports.addCategory = async (req, res) => {
     try {
         logger.info(`${fileName} addCategory() called`);
         let files = req.files;
-        let firebaseAdmin = req.firebaseAdmin;
+        // let firebaseAdmin = req.firebaseAdmin;
         let { name, description } = req.body;
         let columns = [
             "name",
@@ -108,7 +109,7 @@ module.exports.addCategory = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Categories/${details.key}/${element['fieldname']}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, details.key);
+                let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, details.key);
                 if (uploadResult.status) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
@@ -253,7 +254,7 @@ module.exports.updateCategory = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Categories/${categoryKey}/${element['fieldname']}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(filePath, element, categoryKey);
+                let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, categoryKey);
                 if (uploadResult.status == true) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
