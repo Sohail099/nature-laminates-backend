@@ -166,7 +166,7 @@ module.exports.removeCategory = async (req, res) => {
     try {
         logger.info(`${fileName} removeCategory() called`);
         let { key } = req.body;
-        let firebaseAdmin = req.firebaseAdmin;
+        // let firebaseAdmin = req.firebaseAdmin;
         let productToBeDeleted = await productsModel.getProductToBeDeletedList(key);
         console.log("Data : ", productToBeDeleted.rows);
         let result = await categoriesModel.removeCategory(key);
@@ -174,13 +174,13 @@ module.exports.removeCategory = async (req, res) => {
             let filePath = `Categories/${result.rows[0]['key']}`;
             let photo = result.rows[0]['photo'];
             if (photo != null) {
-                await firebaseStorageHelper.deleteDirectoryFromStorage(filePath);
+                await awsS3StorageHelper.deleteDirectoryFromStoragev2(filePath);
             }
             if (productToBeDeleted.rows[0]['product_keys'] != null) {
                 productToBeDeleted = productToBeDeleted.rows[0]['product_keys']
                 for (let index = 0; index < productToBeDeleted.length; index++) {
                     let filePath = `Products/${productToBeDeleted[index]}`;
-                    await firebaseStorageHelper.deleteDirectoryFromStorage(filePath);
+                    await awsS3StorageHelper.deleteDirectoryFromStoragev2(filePath);
                 }
             }
             return res.status(200).json({

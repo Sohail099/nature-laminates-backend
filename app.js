@@ -19,8 +19,8 @@ const admin = require('firebase-admin');
 const { sendWarningToSlack } = require('./helpers/slackHelper');
 
 const S3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY
+    accessKeyId: process.env.AWS_ACCESS,
+    secretAccessKey: process.env.AWS_SECRET
 });
 
 const params = {
