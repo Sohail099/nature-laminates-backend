@@ -4,15 +4,15 @@ const productsModel = require('../models/products');
 const mediaModel = require('../models/media');
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
-const firebaseStorageHelper = require("../firebase/firebaseStorageHelper");
-const latterFormat = require("../utils/other/caseSensitive");
-const uuid = require('uuid')
+const letterFormat = require("../utils/other/caseSensitive");
+const uuid = require('uuid');
+const { uploadImageToStorage, deleteDirectoryFromStorage } = require('../aws/awsStorageHelper');
+
 
 module.exports.addProduct = async (req, res) => {
     try {
         logger.info(`${fileName} addProduct() called`);
         let files = req.files;
-        let firebaseAdmin = req.firebaseAdmin;
         let { name, categorykey, product_code, dimension_unit, width, length, price, description } = req.body;
         let columns = [
             "name",
@@ -23,9 +23,9 @@ module.exports.addProduct = async (req, res) => {
             "width",
             "length",
             "price"
-        ];   
-        let inputName =  latterFormat.formatString(name);
-        let inputDescription =  latterFormat.formatString(description)
+        ];
+        let inputName = letterFormat.formatString(name, false);
+        let inputDescription = letterFormat.formatString(description)
 
         let values = [
             inputName, categorykey, inputDescription, product_code, dimension_unit, width, length, price
@@ -40,7 +40,7 @@ module.exports.addProduct = async (req, res) => {
                 let mediaValues = [];
                 mediaColumns.push("key", "url", "product_key", "media_type", "name");
                 let filePath = `Products/${details.key}/${mediaKey}`;
-                let uploadResult = await firebaseStorageHelper.uploadImageToStorage(firebaseAdmin, filePath, element, mediaKey);
+                let uploadResult = await uploadImageToStorage(filePath, element, mediaKey);
 
                 if (uploadResult.status) {
                     mediaValues.push(mediaKey, uploadResult.url, details.key, element['mimetype'], element['originalname']);
@@ -95,11 +95,10 @@ module.exports.removeProducts = async (req, res) => {
     try {
         logger.info(`${fileName} removeProducts() called`);
         let { key } = req.body;
-        let firebaseAdmin = req.firebaseAdmin;
         let result = await productsModel.removeProduct(key);
         if (result.rowCount) {
             let filePath = `Products/${result.rows[0]['key']}`;
-            await firebaseStorageHelper.deleteDirectoryFromStorage(firebaseAdmin, filePath);
+            await deleteDirectoryFromStorage(filePath);
             return res.status(200).json({
                 status: `success`,
                 message: `product removed`,
@@ -133,13 +132,13 @@ module.exports.updateProduct = async (req, res) => {
         let restrictedKeyforUpdate = ['id', 'key', 'created_at', 'added_by']
         for (let i = 0; i < restrictedKeyforUpdate.length; i++) {
             delete obj[restrictedKeyforUpdate[i]];
-            }
+        }
 
         if (obj.name) {
-            obj.name = latterFormat.formatString(obj.name);
+            obj.name = letterFormat.formatString(obj.name, false);
         }
         if (obj.description) {
-            obj.description = latterFormat.formatString(obj.description);
+            obj.description = letterFormat.formatString(obj.description);
         }
         let columnsToUpdate = Object.entries(obj).map(([key, value]) => key);
         let valuesForUpdate = Object.entries(obj).map(([key, value]) => value);
@@ -223,12 +222,13 @@ module.exports.getAllProductByProductKey = async (req, res) => {
 module.exports.getAllProductName = async (req, res) => {
     try {
         logger.info(`${fileName} getAllProductName() called`);
-        let ProductNames = await productsModel.getAllProductNames();
+        let productNames = await productsModel.getAllProductNames();
+        let nameList = (productNames.rows[0].products_names != null) ? productNames.rows[0].products_names : []
         return res.status(200).json({
             status: 'success',
             message: successMessage,
             statusCode: 200,
-            data: ProductNames.rows[0].products_names
+            data: nameList
         });
     } catch (error) {
         logger.error(`${fileName} getAllProductName() ${error.message}`);

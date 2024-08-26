@@ -10,52 +10,11 @@ const storage = multer.memoryStorage()
 let numCPUs = require('os').cpus().length;
 const PORT = config.port;
 const upload = multer({ storage: storage });
+const { sendWarningToSlack } = require('./helpers/slackHelper');
 
 // if (numCPUs > 4) {
 //     numCPUs = 1;
 // }
-const AWS = require('aws-sdk');
-const admin = require('firebase-admin');
-const { sendWarningToSlack } = require('./helpers/slackHelper');
-
-const S3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY
-});
-
-const params = {
-    Key: process.env.AWS_S3_SA_PATH,
-    Bucket: process.env.AWS_S3_BUCKET
-};
-
-async function getServiceAccountFromS3() {
-    return new Promise((resolve, reject) => {
-        S3.getObject(params, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                const serviceAccount = JSON.parse(data.Body.toString());
-                resolve(serviceAccount);
-            }
-        });
-    });
-}
-
-async function initializeFirebaseAdmin() {
-    try {
-        const serviceAccount = await getServiceAccountFromS3();
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount),
-            storageBucket: "gs://nature-laminates.appspot.com"
-        });
-
-        console.log('Firebase Admin initialized successfully');
-    } catch (error) {
-        console.error('Error initializing Firebase Admin:', error);
-    }
-}
-
-initializeFirebaseAdmin();
 
 if (cluster.isMaster) {
     // create a worker for each CPU
@@ -95,7 +54,6 @@ if (cluster.isMaster) {
         upload.any(),
         (req, res, next) => {
             let oldSend = res.send;
-            req.firebaseAdmin = admin;
             res.send = function (data) {
                 if (res.statusCode >= 500) {
                     logger.error(`@ ${new Date().toISOString()} || ${req.originalUrl} || ${res.statusCode}`);
