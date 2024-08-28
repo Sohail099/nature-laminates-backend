@@ -4,17 +4,10 @@ const productsModel = require('../models/products');
 const mediaModel = require('../models/media');
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
-<<<<<<< HEAD
-const firebaseStorageHelper = require("../firebase/firebaseStorageHelper");
-const latterFormat = require("../utils/other/caseSensitive");
-const awsS3StorageHelper = require("../firebase/awsS3Storaeghelper");
-const uuid = require('uuid')
-=======
 const letterFormat = require("../utils/other/caseSensitive");
 const uuid = require('uuid');
 const { uploadImageToStorage, deleteDirectoryFromStorage } = require('../aws/awsStorageHelper');
 
->>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
 
 module.exports.addProduct = async (req, res) => {
     try {
@@ -47,12 +40,8 @@ module.exports.addProduct = async (req, res) => {
                 let mediaValues = [];
                 mediaColumns.push("key", "url", "product_key", "media_type", "name");
                 let filePath = `Products/${details.key}/${mediaKey}`;
-<<<<<<< HEAD
                 let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, mediaKey);
                 console.log("see file upload",uploadResult);
-=======
-                let uploadResult = await uploadImageToStorage(filePath, element, mediaKey);
->>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
 
                 if (uploadResult.status) {
                     mediaValues.push(mediaKey, uploadResult.url, details.key, element['mimetype'], element['originalname']);

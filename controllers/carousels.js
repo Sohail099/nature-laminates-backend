@@ -3,12 +3,7 @@ const logger = require('../utils/other/logger');
 const carouselsModel = require('../models/carousels.js');
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
-<<<<<<< HEAD
-const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
-const awsS3StorageHelper = require("../firebase/awsS3Storaeghelper");
-=======
 const { uploadImageToStorage, deleteDirectoryFromStorage } = require('../aws/awsStorageHelper.js');
->>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
 
 
 module.exports.getAllCarousels = async (req, res) => {
@@ -51,11 +46,7 @@ module.exports.addCarousels = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Carousels/${details.key}`;
-<<<<<<< HEAD
-                let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, details.key);
-=======
                 let uploadResult = await uploadImageToStorage(filePath, element, details.key);
->>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
                 if (uploadResult.status) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
