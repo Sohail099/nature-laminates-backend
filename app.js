@@ -10,10 +10,12 @@ const storage = multer.memoryStorage()
 let numCPUs = require('os').cpus().length;
 const PORT = config.port;
 const upload = multer({ storage: storage });
+const { sendWarningToSlack } = require('./helpers/slackHelper');
 
 // if (numCPUs > 4) {
 //     numCPUs = 1;
 // }
+<<<<<<< HEAD
 const AWS = require('aws-sdk');
 const admin = require('firebase-admin');
 const { sendWarningToSlack } = require('./helpers/slackHelper');
@@ -56,6 +58,8 @@ async function initializeFirebaseAdmin() {
 }
 
 initializeFirebaseAdmin();
+=======
+>>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
 
 if (cluster.isMaster) {
     // create a worker for each CPU
@@ -95,7 +99,6 @@ if (cluster.isMaster) {
         upload.any(),
         (req, res, next) => {
             let oldSend = res.send;
-            req.firebaseAdmin = admin;
             res.send = function (data) {
                 if (res.statusCode >= 500) {
                     logger.error(`@ ${new Date().toISOString()} || ${req.originalUrl} || ${res.statusCode}`);

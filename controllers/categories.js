@@ -5,9 +5,14 @@ const productsModel = require("../models/products");
 const errMessage = 'Something went wrong';
 const successMessage = 'Successfully Done!';
 const notFoundMessage = 'Requested resource not found';
+<<<<<<< HEAD
 const firebaseStorageHelper = require("../firebase/firebaseStorageHelper")
 const latterFormat = require("../utils/other/caseSensitive");
 const awsS3StorageHelper = require("../firebase/awsS3Storaeghelper");
+=======
+const letterFormat = require("../utils/other/caseSensitive");
+const { uploadImageToStorage, deleteDirectoryFromStorage } = require('../aws/awsStorageHelper');
+>>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
 
 
 module.exports.getAllCategories = async (req, res) => {
@@ -89,14 +94,17 @@ module.exports.addCategory = async (req, res) => {
     try {
         logger.info(`${fileName} addCategory() called`);
         let files = req.files;
+<<<<<<< HEAD
         // let firebaseAdmin = req.firebaseAdmin;
+=======
+>>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
         let { name, description } = req.body;
         let columns = [
             "name",
             "description"
         ];
-        let inputName = latterFormat.formatString(name);
-        let inputDescription = latterFormat.formatString(description)
+        let inputName = letterFormat.formatString(name, false);
+        let inputDescription = letterFormat.formatString(description)
         let values = [
             inputName,
             inputDescription
@@ -109,7 +117,11 @@ module.exports.addCategory = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Categories/${details.key}/${element['fieldname']}`;
+<<<<<<< HEAD
                 let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, details.key);
+=======
+                let uploadResult = await uploadImageToStorage(filePath, element, details.key);
+>>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
                 if (uploadResult.status) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
@@ -166,21 +178,32 @@ module.exports.removeCategory = async (req, res) => {
     try {
         logger.info(`${fileName} removeCategory() called`);
         let { key } = req.body;
+<<<<<<< HEAD
         // let firebaseAdmin = req.firebaseAdmin;
+=======
+>>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
         let productToBeDeleted = await productsModel.getProductToBeDeletedList(key);
-        console.log("Data : ", productToBeDeleted.rows);
         let result = await categoriesModel.removeCategory(key);
         if (result.rowCount) {
-            let filePath = `Categories/${result.rows[0]['key']}`;
+            let filePath = `Categories/${key}`;
             let photo = result.rows[0]['photo'];
             if (photo != null) {
+<<<<<<< HEAD
                 await awsS3StorageHelper.deleteDirectoryFromStoragev2(filePath);
+=======
+                await deleteDirectoryFromStorage(filePath);
+
+>>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
             }
             if (productToBeDeleted.rows[0]['product_keys'] != null) {
                 productToBeDeleted = productToBeDeleted.rows[0]['product_keys']
                 for (let index = 0; index < productToBeDeleted.length; index++) {
                     let filePath = `Products/${productToBeDeleted[index]}`;
+<<<<<<< HEAD
                     await awsS3StorageHelper.deleteDirectoryFromStoragev2(filePath);
+=======
+                    await deleteDirectoryFromStorage(filePath);
+>>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
                 }
             }
             return res.status(200).json({
@@ -214,11 +237,12 @@ module.exports.getAllCategoriesName = async (req, res) => {
     try {
         logger.info(`${fileName} getAllCategoriesName() called`);
         let categoryNames = await categoriesModel.getAllCategoryNames();
+        let nameList = (categoryNames.rows[0].category_names != null) ? categoryNames.rows[0].category_names : []
         return res.status(200).json({
             status: 'success',
             message: successMessage,
             statusCode: 200,
-            data: categoryNames.rows[0].category_names
+            data: nameList
         });
     } catch (error) {
         logger.error(`${fileName} getAllCategoriesName() ${error.message}`);
@@ -235,7 +259,6 @@ module.exports.updateCategory = async (req, res) => {
         logger.info("updateCategory() called");
         let obj = req.body;
         let files = req.files;
-        let firebaseAdmin = req.firebaseAdmin;
         let categoryKey = obj.key;
         let restrictedFields = ['id', 'key', 'created_at', 'added_by'];
 
@@ -243,10 +266,10 @@ module.exports.updateCategory = async (req, res) => {
             delete obj[restrictedFields[i]];
         }
         if (obj.name) {
-            obj.name = latterFormat.formatString(obj.name);
+            obj.name = letterFormat.formatString(obj.name, false);
         }
         if (obj.description) {
-            obj.description = latterFormat.formatString(obj.description);
+            obj.description = letterFormat.formatString(obj.description);
         }
         let updateColumns = [];
         let updateValues = [];
@@ -254,7 +277,11 @@ module.exports.updateCategory = async (req, res) => {
             for (let index = 0; index < files.length; index++) {
                 const element = files[index];
                 let filePath = `Categories/${categoryKey}/${element['fieldname']}`;
+<<<<<<< HEAD
                 let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, categoryKey);
+=======
+                let uploadResult = await uploadImageToStorage(filePath, element, categoryKey);
+>>>>>>> 0c03b3573dcd9ab46334720e1562e0d50ab1fcdc
                 if (uploadResult.status == true) {
                     updateColumns.push(element['fieldname']);
                     updateValues.push(uploadResult.url);
