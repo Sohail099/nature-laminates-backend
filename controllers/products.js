@@ -40,7 +40,7 @@ module.exports.addProduct = async (req, res) => {
                 let mediaValues = [];
                 mediaColumns.push("key", "url", "product_key", "media_type", "name");
                 let filePath = `Products/${details.key}/${mediaKey}`;
-                let uploadResult = await awsS3StorageHelper.uploadImageToS3Storage(filePath, element, mediaKey);
+                let uploadResult = await uploadImageToStorage(filePath, element, mediaKey);
                 console.log("see file upload",uploadResult);
 
                 if (uploadResult.status) {

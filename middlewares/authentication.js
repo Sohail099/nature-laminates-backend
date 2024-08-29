@@ -8,27 +8,29 @@ const logger = require("../utils/other/logger");
 module.exports.validateAuthenticationToken = async (req, res, next) => {
     logger.info(`validateAuthenticationToken called()`);
     const bearerHeader = req.headers['authorization'];
+
+
     if (bearerHeader) {
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
         let validate = await TOKEN.validateToken(bearerToken);
         if (validate) {
-            req.user = validate;
-            let key = validate.key;
-            let userDetails = await usersQueryHelper.getUserDetailsByUniqueKey({ key }, req.transaction);
-            if (userDetails != null) {
-                let status = userDetails.status;
-                if ([undefined, null, 'inactive'].includes(status)) {
-                    return res.status(403).json({
-                        status: `blocked`,
-                        errMessage: `Account has been blocked by admin`,
-                        statusCode: 403,
-                    });
-                }
-                else {
-                    next();
-                }
-            }
+            // req.user = validate;
+            // let key = validate.key;
+            // let userDetails = await usersQueryHelper.getUserDetailsByUniqueKey({ key }, req.transaction);
+            // if (userDetails != null) {
+            //     let status = userDetails.status;
+            //     if ([undefined, null, 'inactive'].includes(status)) {
+            //         return res.status(403).json({
+            //             status: `blocked`,
+            //             errMessage: `Account has been blocked by admin`,
+            //             statusCode: 403,
+            //         });
+            //     }
+            //     else {
+                 next();
+            //     }
+            // } 
         }
         else {
             return res.status(403).json({

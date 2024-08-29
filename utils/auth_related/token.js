@@ -12,7 +12,7 @@ module.exports.generateToken  = async function(userDetails)
     let options ={
         issuer:"midlal.com",
         // key: userKey,
-        expiresIn:'1m'
+        expiresIn:'1h'
     };
     let access_token = await jwt.sign(payload,process.env.ACCESS_TOKEN_SECRET,options);
     // // console.log(access_token);
@@ -46,7 +46,7 @@ module.exports.generateRefreshToken = async(userDetails)=>
     };
     let options ={
         issuer:"midlal.com",
-        expiresIn:'1h'
+        expiresIn:'7d'
     };
     let refreshToken=jwt.sign(payload,process.env.REFRESH_TOKEN_SECRET,options);
     return refreshToken;
