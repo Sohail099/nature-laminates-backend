@@ -12,11 +12,14 @@ const { uploadImageToStorage, deleteDirectoryFromStorage } = require('../aws/aws
 module.exports.addProduct = async (req, res) => {
     try {
         logger.info(`${fileName} addProduct() called`);
+        console.log("see what is in it^^^^^^^^^",req.user.key);
+        let addedBykey = req.user.key;
         let files = req.files;
         let { name, categorykey, product_code, dimension_unit, width, length, price, description } = req.body;
         let columns = [
             "name",
             "category_key",
+            "added_by",
             "description",
             "product_code",
             "dimension_unit",
@@ -28,7 +31,7 @@ module.exports.addProduct = async (req, res) => {
         let inputDescription = letterFormat.formatString(description)
 
         let values = [
-            inputName, categorykey, inputDescription, product_code, dimension_unit, width, length, price
+            inputName, categorykey,addedBykey,inputDescription, product_code, dimension_unit, width, length, price
         ]
         let result = await productsModel.addProducts(columns, values);
         if (result.rowCount) {
@@ -38,13 +41,13 @@ module.exports.addProduct = async (req, res) => {
                 let mediaKey = uuid.v4();
                 let mediaColumns = [];
                 let mediaValues = [];
-                mediaColumns.push("key", "url", "product_key", "media_type", "name");
+                mediaColumns.push("key", "url", "product_key", "media_type", "name","added_by");
                 let filePath = `Products/${details.key}/${mediaKey}`;
                 let uploadResult = await uploadImageToStorage(filePath, element, mediaKey);
                 console.log("see file upload",uploadResult);
 
                 if (uploadResult.status) {
-                    mediaValues.push(mediaKey, uploadResult.url, details.key, element['mimetype'], element['originalname']);
+                    mediaValues.push(mediaKey, uploadResult.url, details.key, element['mimetype'], element['originalname'],addedBykey);
                     await mediaModel.addMedia(mediaColumns, mediaValues)
                 }
             }
@@ -218,7 +221,6 @@ module.exports.getAllProductByProductKey = async (req, res) => {
         })
     }
 }
-
 
 module.exports.getAllProductName = async (req, res) => {
     try {

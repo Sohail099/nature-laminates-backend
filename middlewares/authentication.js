@@ -1,7 +1,7 @@
 require('dotenv').config();
 const TOKEN = require("../utils/auth_related/token");
 const logger = require("../utils/other/logger");
-// const usersQueryHelper = require("../query_helpers/users_query_helper");
+const usersQueryHelper = require("../models/user");
 // const rolesQueryHelper = require("../query_helpers/roles_query_helper");
 
 
@@ -15,22 +15,23 @@ module.exports.validateAuthenticationToken = async (req, res, next) => {
         const bearerToken = bearer[1];
         let validate = await TOKEN.validateToken(bearerToken);
         if (validate) {
-            // req.user = validate;
-            // let key = validate.key;
-            // let userDetails = await usersQueryHelper.getUserDetailsByUniqueKey({ key }, req.transaction);
-            // if (userDetails != null) {
-            //     let status = userDetails.status;
-            //     if ([undefined, null, 'inactive'].includes(status)) {
-            //         return res.status(403).json({
-            //             status: `blocked`,
-            //             errMessage: `Account has been blocked by admin`,
-            //             statusCode: 403,
-            //         });
-            //     }
-            //     else {
+            req.user = validate;
+            let key = validate.userDetails;
+            let userDetails = await usersQueryHelper.getAlluserDetails(key);
+            if (userDetails != null) {
+                let status = userDetails.rows[0].status;
+                if ([undefined, null, 'inactive'].includes(status)) {
+                    return res.status(403).json({
+                        status: `blocked`,
+                        errMessage: `Account has been blocked by admin`,
+                        statusCode: 403,
+                    });
+                }
+                else {
+                    req.user.key = userDetails.rows[0].key;
                  next();
-            //     }
-            // } 
+                }
+            } 
         }
         else {
             return res.status(403).json({
@@ -56,7 +57,7 @@ module.exports.checkIsAdmin = async (req, res, next) => {
         if (userDetails.role_id === role_id) {
             let roleDetails = await rolesQueryHelper.getRoleDetailsByUniqueKey({ key: role_id }, req.transaction);
             if (roleDetails != null) {
-                if (roleDetails.role_name === 'Super Admin') {
+                if (roleDetails.role_name === 'Super Admin') {  
                     next();
                 }
                 else {

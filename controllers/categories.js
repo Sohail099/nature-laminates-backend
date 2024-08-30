@@ -87,17 +87,20 @@ module.exports.getCategoryDetails = async (req, res) => {
 module.exports.addCategory = async (req, res) => {
     try {
         logger.info(`${fileName} addCategory() called`);
+        let addedBykey = req.user.key;
         let files = req.files;
         let { name, description } = req.body;
         let columns = [
             "name",
-            "description"
+            "description",
+            "added_by"
         ];
         let inputName = letterFormat.formatString(name, false);
         let inputDescription = letterFormat.formatString(description)
         let values = [
             inputName,
-            inputDescription
+            inputDescription,
+            addedBykey
         ]
         let result = await categoriesModel.addCategory(columns, values);
         if (result.rowCount) {

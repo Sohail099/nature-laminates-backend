@@ -10,6 +10,7 @@ const { uploadImageToStorage, deleteDirectoryFromStorage } = require('../aws/aws
 module.exports.addMedia = async (req, res) => {
     try {
         logger.info(`${fileName} addMedia() called`);
+        let addedBykey = req.user.key;
         let files = req.files;
         let { productkey } = req.body;
 
@@ -19,13 +20,13 @@ module.exports.addMedia = async (req, res) => {
             let mediaKey = uuid.v4();
             let mediaColumns = [];
             let mediaValues = [];
-            mediaColumns.push("url", "product_key", "media_type", "name");
+            mediaColumns.push("url", "product_key", "media_type", "name","added_by");
 
             let filePath = `Products/${productkey}/${mediaKey}`;
             let uploadResult = await uploadImageToStorage(filePath, element, mediaKey);
             if (uploadResult.status) {
 
-                mediaValues.push(uploadResult.url, productkey, element['mimetype'], element['originalname']);
+                mediaValues.push(uploadResult.url, productkey, element['mimetype'], element['originalname'],addedBykey);
                 let mediaResult = await mediaModel.addMedia(mediaColumns, mediaValues);
                 resultsArray.push(mediaResult);
 
@@ -60,8 +61,6 @@ module.exports.addMedia = async (req, res) => {
         })
     }
 }
-
-
 module.exports.removeMedia = async (req, res) => {
     logger.info(`${fileName} removeMedia() called`);
     try {
