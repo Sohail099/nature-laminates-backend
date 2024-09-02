@@ -89,3 +89,16 @@ module.exports.updateUserDetails = async (columnsToUpdate,valuesForUpdate,key)=>
         throw new Error(error.message);
     }
 };
+
+module.exports.getAlluserDetails = async(email)=>{
+  logger.info(`${fileName} getAlluserDetails called()`);
+  let sqlQuery = `select * from "users" where email = $1`;
+  let data = [email];
+  try {
+    let result = await dbUtil.sqlToDB(sqlQuery,data);
+    return result;
+  } catch (error) {
+    logger.error(`${fileName} getalluserDetails called () ${error.message}`);
+    throw new Error(error.message);
+  }
+}

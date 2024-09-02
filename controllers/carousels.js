@@ -30,12 +30,15 @@ module.exports.getAllCarousels = async (req, res) => {
 module.exports.addCarousels = async (req, res) => {
     try {
         logger.info(`${fileName} addCarousles() called`);
+        let addedBykey = req.user.key;
         let files = req.files;
         let columns = [
-            "name"
+            "name",
+            "added_by"
         ];
         let values = [
-            files[0].originalname
+            files[0].originalname,
+            addedBykey
         ]
 
         let result = await carouselsModel.addCarousels(columns, values);

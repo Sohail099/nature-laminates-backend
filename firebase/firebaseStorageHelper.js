@@ -1,3 +1,4 @@
+
 const uploadImageToStorage = async (firebaseAdmin, newFileName, file, token) => {
   const bucket = firebaseAdmin.storage().bucket();
   return new Promise((resolve, reject) => {
